@@ -1,10 +1,7 @@
-#include <string>
-#include <iostream>
+#include "AppInstance.h"
 
-#include "Hello.hpp"
+int main(int argc, char *argv[]) {
+    App::Instance app;
 
-int main(int ac, char *av[]) {
-  Hello hell;
-  std::cout << hell.yo() << " World" << std::endl;
-  return 0;
+    return app.run(argc, argv);
 }

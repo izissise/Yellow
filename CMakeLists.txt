@@ -10,14 +10,23 @@ set(LIBINCLUDE_DIR "${PROJECT_SOURCE_DIR}/libwire/inc")
 set(LIBSOURCE_DIR "${PROJECT_SOURCE_DIR}/libwire/src")
 set(BININCLUDE_DIR "${PROJECT_SOURCE_DIR}/yellow/inc")
 set(BINSOURCE_DIR "${PROJECT_SOURCE_DIR}/yellow/src")
+set(BINRESSOURCE_DIR "${PROJECT_SOURCE_DIR}/yellow/res")
 set(TEST_DIR "${PROJECT_SOURCE_DIR}/tests")
 set(DOC_PATH "${PROJECT_SOURCE_DIR}/doc")
+
+# meta
+# ******************************************************************************
+set(TEMPLATE_VERSION_MAJOR 1 CACHE INT "Version Major")
+set(TEMPLATE_VERSION_MINOR 0 CACHE INT "Version Minor")
+set(TEMPLATE_VERSION_PATCH 0 CACHE INT "Version Patch")
+set(TEMPLATE_ORGANIZATION "NSA" CACHE STRING "Organization")
+set(TEMPLATE_DOMAIN "Listening" CACHE STRING "Domain")
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
 
 # cmake modules
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake;")
 # find_package(Threads REQUIRED)
 
 INCLUDE(CMakeDependentOption)
@@ -30,6 +39,7 @@ INCLUDE(GenerateCccc)
 INCLUDE(GenerateValgrind)
 INCLUDE(CheckCompilerFlags)
 INCLUDE(GenerateExportHeader)
+INCLUDE(Functions)
 
 # --- global compiler flags ---
 COMPILER_FLAGS(FLAGS "-std=c++14"
@@ -70,40 +80,18 @@ OPTION(CODE_METRICS "Decide if code's metrics should be generated." OFF)
 OPTION(CODE_CHECK   "Decide if code should be checked for common errors." OFF)
 OPTION(GENERATE_DOC "Decide if documentation should be generated." OFF)
 
-include_directories("${LIBINCLUDE_DIR}")
+# sources
+# ******************************************************************************
+AddSources("${LIBSOURCE_DIR}" "Lib" lib_source_files)
+AddSources("${LIBINCLUDE_DIR}" "Lib" lib_include_files)
 
-# NetworkLib
-# Build it here in ${CMAKE_CURRENT_BINARY_DIR}/network
-# set(NetworkLib_DIR "${CMAKE_CURRENT_BINARY_DIR}/network")
-# file(MAKE_DIRECTORY ${NetworkLib_DIR})
-# execute_process(COMMAND ${CMAKE_COMMAND} "${PROJECT_SOURCE_DIR}/network" "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" "-G" "${CMAKE_GENERATOR}" WORKING_DIRECTORY "${NetworkLib_DIR}")
-# execute_process(COMMAND ${CMAKE_COMMAND} "--build" "${NetworkLib_DIR}" WORKING_DIRECTORY "${NetworkLib_DIR}")
-# find_package(NetworkLib REQUIRED)
+AddSources("${BINSOURCE_DIR}" "App" bin_source_files)
+AddSources("${BININCLUDE_DIR}" "App" bin_include_files)
 
-# All source files using globs
-file(
-  GLOB
-  lib_source_files
-  ${LIBSOURCE_DIR}/*
-)
-
-file(
-  GLOB_RECURSE
-  lib_include_files
-  ${LIBINCLUDE_DIR}/*
-)
-
-file(
-  GLOB
-  bin_source_files
-  ${BINSOURCE_DIR}/*
-)
-
-file(
-  GLOB_RECURSE
-  bin_include_files
-  ${BININCLUDE_DIR}/*
-)
+# configure files
+# ******************************************************************************
+configure_file(${BININCLUDE_DIR}/meta.h.in meta.h)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(
 # executable name
@@ -121,18 +109,42 @@ add_executable(
   ${bin_include_files}
 )
 
+
+# Lib link
+# ********************
+include_directories("${LIBINCLUDE_DIR}")
 # set_property(TARGET ${BIN_NAME} APPEND PROPERTY INCLUDE_DIRECTORIES "${LIBINCLUDE_DIR}")
 # set_property(TARGET ${LIB_NAME} APPEND PROPERTY INCLUDE_DIRECTORIES "${LIBINCLUDE_DIR}")
 set_property(TARGET ${BIN_NAME} APPEND PROPERTY INCLUDE_DIRECTORIES "${BININCLUDE_DIR}")
-target_link_libraries(${BIN_NAME} ${LIB_NAME})
+target_link_libraries(${BIN_NAME} PUBLIC ${LIB_NAME})
 
-# include_directories("${NETWORKLIB_INCLUDE_DIRS}")
-# set_property(TARGET ${LIB_NAME} APPEND PROPERTY INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/${LIB_NAME}/inc")
 
-# target_link_libraries(${LIB_NAME} NETWORKLIB_network)
-# target_link_libraries(${LIB_NAME} ${CMAKE_THREAD_LIBS_INIT})
+## QT5 ##
 
-file(GLOB TEST_FILES "${TEST_DIR}/*.cpp")
+find_package(Qt5 COMPONENTS Core Gui Widgets Concurrent Qml Quick REQUIRED)
+
+set_target_properties(${BIN_NAME} PROPERTIES AUTOMOC ON)
+set_target_properties(${BIN_NAME} PROPERTIES AUTOUIC ON)
+target_link_libraries(${BIN_NAME} PUBLIC Qt5::Core PUBLIC Qt5::Widgets PUBLIC Qt5::Gui PUBLIC Qt5::Qml PUBLIC Qt5::Quick PUBLIC Qt5::Concurrent)
+
+#########
+
+# copy gui resources
+# ******************************************************************************
+if(APPLE)
+    execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${MACOSX_BUNDLE_RESOURCES})
+    execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MACOSX_BUNDLE_ICON} ${MACOSX_BUNDLE_RESOURCES})
+    add_custom_command(TARGET ${BIN_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${BINRESSOURCE_DIR}" ${PROJECT_BINARY_DIR}/${BIN_NAME}.app/Contents/${RESSOURCE_DEST_NAME})
+else()
+    add_custom_command(TARGET ${BIN_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${BINRESSOURCE_DIR}" ${PROJECT_BINARY_DIR}/${RESSOURCE_DEST_NAME})
+    add_custom_target(CopyResources ALL COMMAND ${CMAKE_COMMAND} -E copy_directory "${BINRESSOURCE_DIR}" ${PROJECT_BINARY_DIR}/${RESSOURCE_DEST_NAME})
+endif()
+
+
+# Tests and Metrics
+# *****************************
+
+AddSources("${TEST_DIR}" "Test" TEST_FILES)
 
 # if (THREADS_FOUND)
 #   target_link_libraries (${LIB_NAME} ${CMAKE_THREAD_LIBS_INIT})

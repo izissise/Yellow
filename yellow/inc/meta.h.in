@@ -1,0 +1,13 @@
+#ifndef _META_H_
+#define _META_H_
+
+struct Meta
+{
+    static constexpr auto appName       = "@PROJECT_NAME@";
+    static constexpr auto orgName       = "@TEMPLATE_ORGANIZATION@";
+    static constexpr auto orgDomain     = "@TEMPLATE_DOMAIN@";
+    static constexpr auto versionString = "@TEMPLATE_VERSION_MAJOR@.@TEMPLATE_VERSION_MINOR@.@TEMPLATE_VERSION_PATCH@";
+    static constexpr auto ressourceDirectory = "@BINRESSOURCE_DIR@";
+};
+
+#endif
