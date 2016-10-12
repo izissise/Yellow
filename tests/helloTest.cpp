@@ -1,6 +1,6 @@
 #include <catch.hpp>
 
-#include "Hello.hpp"
+#include "Hello.h"
 
 TEST_CASE("Hello Test", "[test]") {
 
