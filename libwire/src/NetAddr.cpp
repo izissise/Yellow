@@ -14,6 +14,14 @@ NetAddr::NetAddr(struct sockaddr const* addr)
 : _addr(addrStr(addr)) {
 }
 
+bool NetAddr::operator==(Net::NetAddr const& o) const {
+   return _addr == o._addr;
+}
+
+bool NetAddr::operator!=(Net::NetAddr const& o) const {
+    return !(_addr == o._addr);
+}
+
 std::string NetAddr::addrStr(struct sockaddr const* sa) {
     const void *res;
     char buff[BUFSIZ] = { 0 };

@@ -19,6 +19,9 @@ public:
 
     std::string addr() const { return _addr; };
 
+    bool operator==(Net::NetAddr const& o) const;
+    bool operator!=(Net::NetAddr const& o) const;
+
     operator std::string() const { return _addr; };
 
 protected:
