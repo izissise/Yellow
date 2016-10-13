@@ -6,6 +6,7 @@
 #include <QQmlEngine>
 #include <QDirIterator>
 #include <QDir>
+#include <QTableView>
 
 #include "meta.h"
 
@@ -30,7 +31,8 @@ namespace App {
 
         _view->setSource(QUrl::fromLocalFile(resourceDir + "/qml/App/window.qml"));
         _view->setResizeMode(QQuickView::SizeRootObjectToView);
-        _view->showMaximized();
+        _view->show();
+
     }
 
     int Instance::run(int argc, char** argv) {
