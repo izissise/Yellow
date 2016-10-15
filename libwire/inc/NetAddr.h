@@ -13,6 +13,8 @@ namespace Net {
 class NetAddr {
 public:
     NetAddr(std::string const& addr);
+
+    //! @throw std::system_error
     NetAddr(struct sockaddr const* addr);
 
     ~NetAddr() = default;
@@ -25,6 +27,7 @@ public:
     operator std::string() const { return _addr; };
 
 protected:
+    //! @throw std::system_error
     static std::string addrStr(struct sockaddr const* addr);
 
 protected:

@@ -15,6 +15,8 @@ namespace Net {
 
 class InterfaceInfo {
 public:
+
+    //! @throw std::system_error
     explicit InterfaceInfo(struct ifaddrs const& ifaInfos);
     ~InterfaceInfo() = default;
 
