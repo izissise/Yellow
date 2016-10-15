@@ -1,6 +1,9 @@
 #include "NetUtils.h"
 
 #include <iostream>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <net/if.h>
 
 #include "Utils.h"
 
@@ -14,8 +17,6 @@ std::vector<Net::InterfaceInfo> listInterfaces() {
         throw lastSystemError();
     }
     for (ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next) {
-        if (ifa->ifa_addr == nullptr || ifa->ifa_addr->sa_family == AF_PACKET)
-            continue;
         try {
             res.push_back(InterfaceInfo(*ifa));
         } catch (std::system_error& err) {

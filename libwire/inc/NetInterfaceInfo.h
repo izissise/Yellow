@@ -35,12 +35,12 @@ public:
     bool inPromiscuous() const { return ((_flags & IFF_PROMISC) == IFF_PROMISC); }; //Interface is in promiscuous mode.
     bool noTrailers() const { return ((_flags & IFF_NOTRAILERS) == IFF_NOTRAILERS); }; //Avoid use of trailers.
     bool receiveMulticast() const { return ((_flags & IFF_ALLMULTI) == IFF_ALLMULTI); }; //Receive all multicast packets.
-    bool isBundleMaster() const { return ((_flags & IFF_MASTER) == IFF_MASTER); }; //Master of a load balancing bundle.
-    bool isBundleSlave() const { return ((_flags & IFF_SLAVE) == IFF_SLAVE); }; //Slave of a load balancing bundle.
+//    bool isBundleMaster() const { return ((_flags & IFF_MASTER) == IFF_MASTER); }; //Master of a load balancing bundle.
+//    bool isBundleSlave() const { return ((_flags & IFF_SLAVE) == IFF_SLAVE); }; //Slave of a load balancing bundle.
     bool hasMulticast() const { return ((_flags & IFF_MULTICAST) == IFF_MULTICAST); }; //Supports multicast
-    bool hasMediaType() const { return ((_flags & IFF_PORTSEL) == IFF_PORTSEL); }; //Is able to select media type via ifmap.
-    bool isAutoMediaType() const { return ((_flags & IFF_AUTOMEDIA) == IFF_AUTOMEDIA); }; //Auto media selection active.
-    bool isDynamic() const { return ((_flags & IFF_DYNAMIC) == IFF_DYNAMIC); }; //The addresses are lost when the interface goes down.
+//    bool hasMediaType() const { return ((_flags & IFF_PORTSEL) == IFF_PORTSEL); }; //Is able to select media type via ifmap.
+//    bool isAutoMediaType() const { return ((_flags & IFF_AUTOMEDIA) == IFF_AUTOMEDIA); }; //Auto media selection active.
+//    bool isDynamic() const { return ((_flags & IFF_DYNAMIC) == IFF_DYNAMIC); }; //The addresses are lost when the interface goes down.
 
 protected:
     NetAddr _name;
