@@ -73,6 +73,7 @@ COMPILER_FLAGS(FLAGS "-std=c++14"
 )
 
 # --- user options ---
+OPTION(BUILD_APP "Decide if the app shall be built or not." ON)
 OPTION(BUILD_TESTS "Decide if the test suite shall be built or not." OFF)
 CMAKE_DEPENDENT_OPTION(BUILD_TESTS_COVERAGE "Decide if a coverage report should be generated." ON "BUILD_TESTS" OFF)
 CMAKE_DEPENDENT_OPTION(VALGRIND_CHECK "Decide if valgrind should be executed with the test binary to check for memory leaks." ON "BUILD_TESTS" OFF)
@@ -101,39 +102,41 @@ add_library(
   ${lib_include_files}
 )
 
-add_executable(
-# executable name
-  ${BIN_NAME}
-# source files
-  ${bin_source_files}
-  ${bin_include_files}
-)
+# Only if we build the app
+if (BUILD_APP)
+    add_executable(
+        # executable name
+        ${BIN_NAME}
+        # source files
+        ${bin_source_files}
+        ${bin_include_files}
+    )
 
 
-# Lib link
-# ********************
-include_directories("${LIBINCLUDE_DIR}")
-# set_property(TARGET ${BIN_NAME} APPEND PROPERTY INCLUDE_DIRECTORIES "${LIBINCLUDE_DIR}")
-# set_property(TARGET ${LIB_NAME} APPEND PROPERTY INCLUDE_DIRECTORIES "${LIBINCLUDE_DIR}")
-set_property(TARGET ${BIN_NAME} APPEND PROPERTY INCLUDE_DIRECTORIES "${BININCLUDE_DIR}")
-target_link_libraries(${BIN_NAME} PUBLIC ${LIB_NAME})
+    # Lib link
+    # ********************
+    include_directories("${LIBINCLUDE_DIR}")
+    # set_property(TARGET ${BIN_NAME} APPEND PROPERTY INCLUDE_DIRECTORIES "${LIBINCLUDE_DIR}")
+    # set_property(TARGET ${LIB_NAME} APPEND PROPERTY INCLUDE_DIRECTORIES "${LIBINCLUDE_DIR}")
+    set_property(TARGET ${BIN_NAME} APPEND PROPERTY INCLUDE_DIRECTORIES "${BININCLUDE_DIR}")
+    target_link_libraries(${BIN_NAME} PUBLIC ${LIB_NAME})
 
 
-## QT5 ##
+    ## QT5 ##
 
-find_package(Qt5 COMPONENTS Core Gui Widgets Concurrent Qml Quick REQUIRED)
+    find_package(Qt5 COMPONENTS Core Gui Widgets Concurrent Qml Quick REQUIRED)
 
-set_target_properties(${BIN_NAME} PROPERTIES AUTOMOC ON)
-set_target_properties(${BIN_NAME} PROPERTIES AUTOUIC ON)
-target_link_libraries(${BIN_NAME} PUBLIC Qt5::Core PUBLIC Qt5::Widgets PUBLIC Qt5::Gui PUBLIC Qt5::Qml PUBLIC Qt5::Quick PUBLIC Qt5::Concurrent)
+    set_target_properties(${BIN_NAME} PROPERTIES AUTOMOC ON)
+    set_target_properties(${BIN_NAME} PROPERTIES AUTOUIC ON)
+    target_link_libraries(${BIN_NAME} PUBLIC Qt5::Core PUBLIC Qt5::Widgets PUBLIC Qt5::Gui PUBLIC Qt5::Qml PUBLIC Qt5::Quick PUBLIC Qt5::Concurrent)
 
-#########
+    #########
 
-# copy gui resources
-# ******************************************************************************
-    add_custom_command(TARGET ${BIN_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${BINRESSOURCE_DIR}" ${PROJECT_BINARY_DIR}/${RESSOURCE_DEST_NAME})
-    add_custom_target(CopyResources ALL COMMAND ${CMAKE_COMMAND} -E copy_directory "${BINRESSOURCE_DIR}" ${PROJECT_BINARY_DIR}/${RESSOURCE_DEST_NAME})
-
+    # copy gui resources
+    # ******************************************************************************
+        add_custom_command(TARGET ${BIN_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${BINRESSOURCE_DIR}" ${PROJECT_BINARY_DIR}/${RESSOURCE_DEST_NAME})
+        add_custom_target(CopyResources ALL COMMAND ${CMAKE_COMMAND} -E copy_directory "${BINRESSOURCE_DIR}" ${PROJECT_BINARY_DIR}/${RESSOURCE_DEST_NAME})
+endif()
 
 # Tests and Metrics
 # *****************************
