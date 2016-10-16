@@ -44,7 +44,7 @@ public:
     //! @throw std::system_error
     void saveFile(std::string const& filePath) const;
 
-    bool isByteSwap() const { return _header.magic_number == magic_number; };
+    bool isByteSwap() const { return _needSwap; };
 
     std::tuple<uint16_t, uint16_t> versionNumber() const;
     void versionNumber(uint16_t major, uint16_t minor);
@@ -70,10 +70,6 @@ typedef PcapFile<> PcapFile_t;
 template<class STREAM>
 void PcapFile<STREAM>::loadFile(std::string const& filePath) {
     STREAM file;
-    std::ios_base::iostate exceptionMask = file.exceptions() | std::ios::failbit;
-
-    file.exceptions(exceptionMask);
-
     file.open(filePath, std::ios::in | std::ios::binary);
 
     file.read(reinterpret_cast<char*>(&_header), sizeof(_header));
@@ -111,10 +107,6 @@ void PcapFile<STREAM>::loadFile(std::string const& filePath) {
 template<class STREAM>
 void PcapFile<STREAM>::saveFile(std::string const& filePath) const {
     STREAM file;
-    std::ios_base::iostate exceptionMask = file.exceptions() | std::ios::failbit;
-
-    file.exceptions(exceptionMask);
-
     file.open(filePath, std::ios::out | std::ios::trunc | std::ios::binary);
 
     file.write(reinterpret_cast<const char*>(&_header), sizeof(_header));
@@ -134,7 +126,7 @@ PcapFile<STREAM>::PcapFile()
 template<class STREAM>
 std::tuple<uint16_t, uint16_t> PcapFile<STREAM>::versionNumber() const {
     return std::make_tuple(_header.version_major, _header.version_minor);
-};
+}
 
 template<class STREAM>
 void PcapFile<STREAM>::versionNumber(uint16_t major, uint16_t minor) {

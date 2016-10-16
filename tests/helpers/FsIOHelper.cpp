@@ -23,5 +23,5 @@ void FsIOHelper::open(const std::string& path, std::ios_base::open_mode mode) {
 void FsIOHelper::close() {
   _open = false;
   _closeCallback(*this);
-  clear();
+  str("");
 }
