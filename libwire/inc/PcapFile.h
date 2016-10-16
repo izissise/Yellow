@@ -120,7 +120,28 @@ void PcapFile<STREAM>::saveFile(std::string const& filePath) const {
     file.write(reinterpret_cast<const char*>(&_header), sizeof(_header));
     std::ostreambuf_iterator<char> outIt(file);
     std::copy(std::begin(_rawData), std::end(_rawData), outIt);
+
+    if (file.is_open())
+        file.close();
 }
+
+template<class STREAM>
+PcapFile<STREAM>::PcapFile()
+: _needSwap(false) {
+    _header.magic_number = magic_number;
+}
+
+template<class STREAM>
+std::tuple<uint16_t, uint16_t> PcapFile<STREAM>::versionNumber() const {
+    return std::make_tuple(_header.version_major, _header.version_minor);
+};
+
+template<class STREAM>
+void PcapFile<STREAM>::versionNumber(uint16_t major, uint16_t minor) {
+    _header.version_major = major;
+    _header.version_minor = minor;
+}
+
 
 }
 

@@ -89,6 +89,10 @@ AddSources("${LIBINCLUDE_DIR}" "Lib" lib_include_files)
 AddSources("${BINSOURCE_DIR}" "App" bin_source_files)
 AddSources("${BININCLUDE_DIR}" "App" bin_include_files)
 
+if(BUILD_TESTS) # Tests helpers class
+    AddSources("${TEST_DIR}/helpers" "Test" test_helper_files)
+endif()
+
 # configure files
 # ******************************************************************************
 configure_file(${BININCLUDE_DIR}/meta.h.in meta.h)
@@ -100,6 +104,7 @@ add_library(
 # source files
   ${lib_source_files}
   ${lib_include_files}
+  ${test_helper_files}
 )
 
 # Only if we build the app
@@ -140,7 +145,6 @@ endif()
 
 # Tests and Metrics
 # *****************************
-
 AddSources("${TEST_DIR}" "Test" TEST_FILES)
 
 # if (THREADS_FOUND)
