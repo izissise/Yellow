@@ -5,9 +5,20 @@
 #include <vector>
 #include <memory>
 #include <tuple>
+#include <fstream>
+#include <ostream>
+#include <algorithm>
+#include <iostream>
+#include <iterator>
+#include <stdexcept>
+#include <system_error>
+
+#include "Utils.h"
+#include "NetUtils.h"
 
 namespace Net {
 
+template<class STREAM = std::fstream>
 class PcapFile
 {
     static const uint32_t magic_number = 0xa1b2c3d4;
@@ -53,6 +64,63 @@ private:
     pcap_hdr_t _header;
     std::string _rawData;
 };
+
+typedef PcapFile<> PcapFile_t;
+
+template<class STREAM>
+void PcapFile<STREAM>::loadFile(std::string const& filePath) {
+    STREAM file;
+    std::ios_base::iostate exceptionMask = file.exceptions() | std::ios::failbit;
+
+    file.exceptions(exceptionMask);
+
+    file.open(filePath, std::ios::in | std::ios::binary);
+
+    file.read(reinterpret_cast<char*>(&_header), sizeof(_header));
+    if (file.gcount() != sizeof(_header)) {
+        throw std::runtime_error("Not a pcap file.");
+    }
+
+    if (_header.magic_number == magic_number) {
+        _needSwap = false;
+    } else if (switchEndianness(_header.magic_number) == magic_number) {
+        _needSwap = true;
+        _header.magic_number = magic_number;
+        _header.version_major = switchEndianness(_header.version_major);
+        _header.version_minor = switchEndianness(_header.version_minor);
+        _header.thiszone = switchEndianness(_header.thiszone);
+        _header.sigfigs = switchEndianness(_header.sigfigs);
+        _header.snaplen = switchEndianness(_header.snaplen);
+        _header.network = switchEndianness(_header.network);
+    } else {
+        throw std::runtime_error("Not a pcap file.");
+    }
+    _rawData = std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+    if (file.is_open())
+        file.close();
+
+    std::cout << "Loaded " << filePath << "\n"
+    << "\tVersion: " << _header.version_major << "." << _header.version_minor << "\n"
+    << "\tTimezone: " << _header.thiszone << "\n"
+    << "\tAccuracy: " << _header.sigfigs << "\n"
+    << "\tMax length: " << _header.snaplen << "\n"
+    << "\tLink type: " << _header.network << std::endl;
+}
+
+template<class STREAM>
+void PcapFile<STREAM>::saveFile(std::string const& filePath) const {
+    STREAM file;
+    std::ios_base::iostate exceptionMask = file.exceptions() | std::ios::failbit;
+
+    file.exceptions(exceptionMask);
+
+    file.open(filePath, std::ios::out | std::ios::trunc | std::ios::binary);
+
+    file.write(reinterpret_cast<const char*>(&_header), sizeof(_header));
+    std::ostreambuf_iterator<char> outIt(file);
+    std::copy(std::begin(_rawData), std::end(_rawData), outIt);
+}
 
 }
 
