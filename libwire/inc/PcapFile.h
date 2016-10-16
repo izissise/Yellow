@@ -49,8 +49,8 @@ public:
     std::tuple<uint16_t, uint16_t> versionNumber() const;
     void versionNumber(uint16_t major, uint16_t minor);
 
-    uint16_t timezone() const { return _header.thiszone; };
-    void timezone(uint16_t zone) { _header.thiszone = zone; };
+    int32_t timezone() const { return _header.thiszone; };
+    void timezone(int32_t zone) { _header.thiszone = zone; };
 
     uint32_t accuracy() const { return _header.sigfigs; };
     void accuracy(uint32_t accuracy) { _header.sigfigs = accuracy; };
@@ -95,13 +95,6 @@ void PcapFile<STREAM>::loadFile(std::string const& filePath) {
 
     if (file.is_open())
         file.close();
-
-    std::cout << "Loaded " << filePath << "\n"
-    << "\tVersion: " << _header.version_major << "." << _header.version_minor << "\n"
-    << "\tTimezone: " << _header.thiszone << "\n"
-    << "\tAccuracy: " << _header.sigfigs << "\n"
-    << "\tMax length: " << _header.snaplen << "\n"
-    << "\tLink type: " << _header.network << std::endl;
 }
 
 template<class STREAM>
