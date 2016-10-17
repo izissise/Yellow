@@ -20,6 +20,12 @@ void FsIOHelper::open(const std::string& path, std::ios_base::open_mode mode) {
   }
 }
 
+FsIOHelper::~FsIOHelper() {
+    if (is_open())
+        close();
+}
+
+
 void FsIOHelper::close() {
   _open = false;
   _closeCallback(*this);

@@ -9,7 +9,7 @@
 class FsIOHelper : public std::stringstream {
 public:
     FsIOHelper() = default;
-    virtual ~FsIOHelper() = default;
+    virtual ~FsIOHelper();
 
     void open(std::string const& path, std::ios_base::open_mode mode);
     void close();

@@ -12,8 +12,10 @@
 #include <iterator>
 #include <stdexcept>
 #include <system_error>
+#include <stdint.h>
 
 #include "Utils.h"
+#include "ScopeGuard.h"
 #include "NetUtils.h"
 
 namespace Net {
@@ -62,7 +64,7 @@ public:
 private:
     bool _needSwap;
     pcap_hdr_t _header;
-    std::string _rawData;
+    data_t _rawData;
 };
 
 typedef PcapFile<> PcapFile_t;
@@ -91,23 +93,18 @@ void PcapFile<STREAM>::loadFile(std::string const& filePath) {
     } else {
         throw std::runtime_error("Not a pcap file.");
     }
-    _rawData = std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-
-    if (file.is_open())
-        file.close();
+    _rawData = data_t((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 }
 
 template<class STREAM>
 void PcapFile<STREAM>::saveFile(std::string const& filePath) const {
     STREAM file;
+
     file.open(filePath, std::ios::out | std::ios::trunc | std::ios::binary);
 
     file.write(reinterpret_cast<const char*>(&_header), sizeof(_header));
     std::ostreambuf_iterator<char> outIt(file);
     std::copy(std::begin(_rawData), std::end(_rawData), outIt);
-
-    if (file.is_open())
-        file.close();
 }
 
 template<class STREAM>
