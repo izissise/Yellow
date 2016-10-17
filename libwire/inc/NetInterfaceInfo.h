@@ -25,7 +25,6 @@ public:
     Net::NetAddr getNetmask() const { return _netmask; };
     Net::NetAddr getBroadcast() const { return _broadcast; };
 
-
     //Flag infos
     bool isUp() const { return ((_flags & IFF_UP) == IFF_UP); }; //Interface is running.
     bool hasValidBroadcast() const { return ((_flags & IFF_BROADCAST) == IFF_BROADCAST); }; //Valid broadcast address set.
