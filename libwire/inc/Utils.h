@@ -6,6 +6,8 @@
 #include <exception>
 #include <system_error>
 
+#include "RawData.h"
+
 std::system_error lastSystemError();
 std::string stringToHex(std::string const& s, bool uppercase = true);
 
