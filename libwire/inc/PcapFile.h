@@ -18,6 +18,8 @@
 #include "ScopeGuard.h"
 #include "NetUtils.h"
 
+#include "PcapPacket.h"
+
 namespace Net {
 
 template<class STREAM = std::fstream>
