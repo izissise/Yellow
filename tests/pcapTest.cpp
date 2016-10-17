@@ -4,6 +4,9 @@
 #include "FsIOHelper.h"
 #include "GlobalFsIOHelper.h"
 
+extern char ___basicsniff_pcap[];
+extern unsigned int ___basicsniff_pcap_len;
+
 class pcapIOFixture {
 public:
     pcapIOFixture()
@@ -30,7 +33,7 @@ public:
         });
 
         gfsioh.registerPath("4.pcap", [] (std::stringstream& stream) {
-            char data[] = "\x02\x68";
+            char data[] = "\x02\x68\x42";
             stream.write(data, sizeof(data) - 1);
         }, [this] (const std::stringstream& stream) {
             (void)stream;
@@ -41,7 +44,19 @@ public:
         }, [this] (const std::stringstream& stream) {
             std::stringstream ss;
             char data[] = "\xd4\xc3\xb2\xa1\x02\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x01\x00\x00\x00";
+std::cout << "Closed" << std::endl;
             ss.write(data, sizeof(data) - 1);
+            if (stream.str() != ss.str()) {
+                throw std::runtime_error("Not intended datas.");
+            }
+
+        });
+
+        gfsioh.registerPath("6.pcap", [] (std::stringstream& stream) {
+            stream.write(___basicsniff_pcap, sizeof(___basicsniff_pcap_len) - 1);
+        }, [this] (const std::stringstream& stream) {
+            std::stringstream ss;
+            ss.write(___basicsniff_pcap, sizeof(___basicsniff_pcap_len) - 1);
             if (stream.str() != ss.str()) {
                 throw std::runtime_error("Not intended datas.");
             }
@@ -99,5 +114,16 @@ TEST_CASE_METHOD(pcapIOFixture, "Pcap file tests", "[net][pcap][io]") {
         pcap.maxLength(262144);
         pcap.linkType(1);
         CHECK_NOTHROW(pcap.saveFile("5.pcap"));
+    }
+
+    SECTION("Loading a file and saving should be equal") {
+        Net::PcapFile<FsIOHelper> pcap;
+        REQUIRE_NOTHROW(pcap.loadFile("6.pcap"));
+        CHECK_NOTHROW(pcap.saveFile("6.pcap"));
+    }
+
+    SECTION("Loading a non exsting file shoud throw") {
+        Net::PcapFile<FsIOHelper> pcap;
+        CHECK_THROWS(pcap.loadFile("inexistant.pcap"));
     }
 }
