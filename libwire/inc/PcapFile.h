@@ -74,6 +74,10 @@ typedef PcapFile<> PcapFile_t;
 template<class STREAM>
 void PcapFile<STREAM>::loadFile(std::string const& filePath) {
     STREAM file;
+    ScopeGuard guard([&] () {
+        file.close();
+    });
+
     file.open(filePath, std::ios::in | std::ios::binary);
 
     file.read(reinterpret_cast<char*>(&_header), sizeof(_header));
@@ -101,6 +105,9 @@ void PcapFile<STREAM>::loadFile(std::string const& filePath) {
 template<class STREAM>
 void PcapFile<STREAM>::saveFile(std::string const& filePath) const {
     STREAM file;
+    ScopeGuard guard([&] () {
+        file.close();
+    });
 
     file.open(filePath, std::ios::out | std::ios::trunc | std::ios::binary);
 

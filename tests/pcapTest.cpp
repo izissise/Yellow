@@ -44,7 +44,6 @@ public:
         }, [this] (const std::stringstream& stream) {
             std::stringstream ss;
             char data[] = "\xd4\xc3\xb2\xa1\x02\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x01\x00\x00\x00";
-std::cout << "Closed" << std::endl;
             ss.write(data, sizeof(data) - 1);
             if (stream.str() != ss.str()) {
                 throw std::runtime_error("Not intended datas.");

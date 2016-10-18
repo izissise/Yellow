@@ -28,6 +28,8 @@ FsIOHelper::~FsIOHelper() {
 
 void FsIOHelper::close() {
   _open = false;
-  _closeCallback(*this);
+  if (is_open()) {
+    _closeCallback(*this);
+  }
   str("");
 }
