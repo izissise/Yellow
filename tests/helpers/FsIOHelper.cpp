@@ -5,7 +5,11 @@
 #include "GlobalFsIOHelper.h"
 
 void FsIOHelper::open(const std::string& path, std::ios_base::open_mode mode) {
-  (void)mode;
+
+  if ((mode & std::ios::trunc) == std::ios::trunc) {
+      str("");
+      seekg(0);
+  }
 
   auto& gfsioh = GlobalFsIOHelper::instance();
   try {

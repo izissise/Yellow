@@ -51,12 +51,17 @@ public:
 
         });
 
-        gfsioh.registerPath("6.pcap", [] (std::stringstream& stream) {
+        gfsioh.registerPath("6.1.pcap", [] (std::stringstream& stream) {
             stream.write(___basicsniff_pcap, ___basicsniff_pcap_len - 1);
+        }, [] (const std::stringstream& stream) {
+            (void)stream;
+        });
+
+        gfsioh.registerPath("6.2.pcap", [] (std::stringstream& stream) {
+            (void)stream;
         }, [] (const std::stringstream& stream) {
             std::stringstream ss("");
             ss.write(___basicsniff_pcap, ___basicsniff_pcap_len - 1);
-            std::cout << stream.str() << std::endl;
             if (stream.str() != ss.str()) {
                 throw std::runtime_error("Not intended datas.");
             }
@@ -118,8 +123,8 @@ TEST_CASE_METHOD(pcapIOFixture, "Pcap file tests", "[net][pcap][io]") {
 
     SECTION("Loading a file and saving should be equal") {
         Net::PcapFile<FsIOHelper> pcap;
-        REQUIRE_NOTHROW(pcap.loadFile("6.pcap"));
-        CHECK_NOTHROW(pcap.saveFile("6.pcap"));
+        REQUIRE_NOTHROW(pcap.loadFile("6.1.pcap"));
+        CHECK_NOTHROW(pcap.saveFile("6.2.pcap"));
     }
 
     SECTION("Loading a non exsting file shoud throw") {
