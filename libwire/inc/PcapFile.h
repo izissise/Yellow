@@ -133,7 +133,6 @@ void PcapFile<STREAM>::versionNumber(uint16_t major, uint16_t minor) {
     _header.version_minor = minor;
 }
 
-
 }
 
 #endif // PCAPFILE_H

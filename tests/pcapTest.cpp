@@ -14,34 +14,34 @@ public:
         gfsioh.registerPath("1.pcap", [] (std::stringstream& stream) {
             char data[] = "\xd4\xc3\xb2\xa1\x02\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x01\x00\x00\x00";
             stream.write(data, sizeof(data) - 1);
-        }, [this] (const std::stringstream& stream) {
+        }, [] (const std::stringstream& stream) {
             (void)stream;
         });
 
         gfsioh.registerPath("2.pcap", [] (std::stringstream& stream) {
             char data[] = "\xa1\xb2\xc3\xd4\x00\x02\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00\x01";
             stream.write(data, sizeof(data) - 1);
-        }, [this] (const std::stringstream& stream) {
+        }, [] (const std::stringstream& stream) {
             (void)stream;
         });
 
         gfsioh.registerPath("3.pcap", [] (std::stringstream& stream) {
             char data[] = "\xf1\xb2\xc3\xd4\x00\x02\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00\x01";
             stream.write(data, sizeof(data) - 1);
-        }, [this] (const std::stringstream& stream) {
+        }, [] (const std::stringstream& stream) {
             (void)stream;
         });
 
         gfsioh.registerPath("4.pcap", [] (std::stringstream& stream) {
             char data[] = "\x02\x68\x42";
             stream.write(data, sizeof(data) - 1);
-        }, [this] (const std::stringstream& stream) {
+        }, [] (const std::stringstream& stream) {
             (void)stream;
         });
 
         gfsioh.registerPath("5.pcap", [] (std::stringstream& stream) {
             (void)stream;
-        }, [this] (const std::stringstream& stream) {
+        }, [] (const std::stringstream& stream) {
             std::stringstream ss;
             char data[] = "\xd4\xc3\xb2\xa1\x02\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x01\x00\x00\x00";
             ss.write(data, sizeof(data) - 1);
@@ -52,10 +52,11 @@ public:
         });
 
         gfsioh.registerPath("6.pcap", [] (std::stringstream& stream) {
-            stream.write(___basicsniff_pcap, sizeof(___basicsniff_pcap_len) - 1);
-        }, [this] (const std::stringstream& stream) {
-            std::stringstream ss;
-            ss.write(___basicsniff_pcap, sizeof(___basicsniff_pcap_len) - 1);
+            stream.write(___basicsniff_pcap, ___basicsniff_pcap_len - 1);
+        }, [] (const std::stringstream& stream) {
+            std::stringstream ss("");
+            ss.write(___basicsniff_pcap, ___basicsniff_pcap_len - 1);
+            std::cout << stream.str() << std::endl;
             if (stream.str() != ss.str()) {
                 throw std::runtime_error("Not intended datas.");
             }

@@ -27,9 +27,10 @@ FsIOHelper::~FsIOHelper() {
 
 
 void FsIOHelper::close() {
-  _open = false;
   if (is_open()) {
     _closeCallback(*this);
   }
+  _open = false;
   str("");
+  seekg(0);
 }

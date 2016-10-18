@@ -18,7 +18,7 @@ public:
 private:
     std::function<void(std::stringstream& io)> _openCallback;
     std::function<void(std::stringstream const& io)> _closeCallback;
-    bool _open;
+    bool _open = false;
 };
 
 #endif // FSIOHELPER_H
