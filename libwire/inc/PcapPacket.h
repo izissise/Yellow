@@ -11,7 +11,6 @@
 
 namespace Net {
 
-template<class DATA = data_t>
 class PcapPacket {
 
 typedef struct pcaprec_hdr_s {
@@ -26,25 +25,24 @@ public:
     PcapPacket(ITERATOR& start, ITERATOR const& end, bool swap, size_t maxLength);
     ~PcapPacket() = default;
 
-    // timestamp to std::date ?
+    //TODO timestamp to std::date ?
 
     data_t& packet() { return _packet; };
     data_t const& packet() const { return _packet; };
 
     bool isIncomplete() const { return _header.incl_len != _header.orig_len; };
+
+    data_t getRawData() const;
 private:
     bool _needSwap;
     pcaprec_hdr_t _header;
     data_t _packet;
 };
 
-typedef PcapPacket<> PcapPacket_t;
-
-template<class DATA>
 template<typename ITERATOR>
-PcapPacket<DATA>::PcapPacket(ITERATOR& start, ITERATOR const& end, bool swap, size_t maxLength) {
-    if (static_cast<size_t>(std::distance(start, end)) <= sizeof(_header)) {
-        throw std::runtime_error("Error parsing packet.");
+PcapPacket::PcapPacket(ITERATOR& start, ITERATOR const& end, bool swap, size_t maxLength) {
+    if (static_cast<size_t>(std::distance(start, end)) < sizeof(_header)) {
+        throw std::runtime_error("Error parsing packet header.");
     }
     auto tmp = std::next(start, sizeof(_header));
     std::copy(start, tmp, reinterpret_cast<char*>(&_header));
@@ -58,8 +56,8 @@ PcapPacket<DATA>::PcapPacket(ITERATOR& start, ITERATOR const& end, bool swap, si
     if (_header.incl_len > maxLength) {
        std::cerr << "Warning length of packet is larger than max length, continuing anyways." << std::endl;
     }
-    if (static_cast<size_t>(std::distance(start, end)) <= _header.incl_len) {
-        throw std::runtime_error("Error parsing packet.");
+    if (static_cast<size_t>(std::distance(start, end)) < _header.incl_len) {
+        throw std::runtime_error("Error parsing packet data.");
     }
     tmp = std::next(start, _header.incl_len);
     std::copy(start, tmp, std::back_inserter(_packet));

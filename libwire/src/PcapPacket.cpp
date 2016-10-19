@@ -1,8 +1,9 @@
 #include "PcapPacket.h"
 
 namespace Net {
-// PcapPacket::PcapPacket(data_t const& data, data_t::const_iterator& pos) {
-//
-// }
+
+data_t PcapPacket::getRawData() const {
+    return data_t(reinterpret_cast<const char*>(&_header), sizeof(_header)) + _packet;
+}
 
 }

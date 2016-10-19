@@ -66,7 +66,7 @@ public:
 private:
     bool _needSwap;
     pcap_hdr_t _header;
-    std::vector<PcapPacket_t> _packets;
+    std::vector<PcapPacket> _packets;
 };
 
 typedef PcapFile<> PcapFile_t;
@@ -103,7 +103,7 @@ void PcapFile<STREAM>::loadFile(std::string const& filePath) {
          it != end;) {
         tmp = it;
         try {
-            _packets.push_back(PcapPacket_t(it, end, isByteSwap(), _header.snaplen));
+            _packets.push_back(PcapPacket(it, end, isByteSwap(), _header.snaplen));
         } catch (std::runtime_error& e) {
             std::cerr << e.what() << std::endl;
         }
@@ -124,7 +124,10 @@ void PcapFile<STREAM>::saveFile(std::string const& filePath) const {
 
     file.write(reinterpret_cast<const char*>(&_header), sizeof(_header));
     std::ostreambuf_iterator<char> outIt(file);
-    std::copy(std::begin(_rawData), std::end(_rawData), outIt);
+    for (auto const& packet : _packets) {
+        auto d = packet.getRawData();
+        outIt = std::copy(std::begin(d), std::end(d), outIt);
+    }
 }
 
 template<class STREAM>
