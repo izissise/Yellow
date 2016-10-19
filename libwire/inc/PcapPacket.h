@@ -5,6 +5,8 @@
 #include <string>
 #include <stdint.h>
 
+#include <iostream>
+
 #include "Utils.h"
 
 namespace Net {
@@ -20,7 +22,8 @@ typedef struct pcaprec_hdr_s {
 } pcaprec_hdr_t;
 
 public:
-    PcapPacket(DATA const& data, typename DATA::const_iterator& pos, size_t maxLength);
+    template<typename ITERATOR>
+    PcapPacket(ITERATOR& start, ITERATOR const& end, bool swap, size_t maxLength);
     ~PcapPacket() = default;
 
     // timestamp to std::date ?
@@ -35,9 +38,32 @@ private:
     data_t _packet;
 };
 
-template<class DATA>
-PcapPacket<DATA>::PcapPacket(DATA const& data, typename DATA::const_iterator& pos, size_t maxLength) {
+typedef PcapPacket<> PcapPacket_t;
 
+template<class DATA>
+template<typename ITERATOR>
+PcapPacket<DATA>::PcapPacket(ITERATOR& start, ITERATOR const& end, bool swap, size_t maxLength) {
+    if (static_cast<size_t>(std::distance(start, end)) <= sizeof(_header)) {
+        throw std::runtime_error("Error parsing packet.");
+    }
+    auto tmp = std::next(start, sizeof(_header));
+    std::copy(start, tmp, reinterpret_cast<char*>(&_header));
+    start = tmp;
+    if (swap) {
+       _header.ts_sec = switchEndianness(_header.ts_sec);
+       _header.ts_usec = switchEndianness(_header.ts_usec);
+       _header.incl_len = switchEndianness(_header.incl_len);
+       _header.orig_len = switchEndianness(_header.orig_len);
+    }
+    if (_header.incl_len > maxLength) {
+       std::cerr << "Warning length of packet is larger than max length, continuing anyways." << std::endl;
+    }
+    if (static_cast<size_t>(std::distance(start, end)) <= _header.incl_len) {
+        throw std::runtime_error("Error parsing packet.");
+    }
+    tmp = std::next(start, _header.incl_len);
+    std::copy(start, tmp, std::back_inserter(_packet));
+    start = tmp;
 }
 
 }

@@ -66,7 +66,7 @@ public:
 private:
     bool _needSwap;
     pcap_hdr_t _header;
-    data_t _rawData;
+    std::vector<PcapPacket_t> _packets;
 };
 
 typedef PcapFile<> PcapFile_t;
@@ -99,7 +99,18 @@ void PcapFile<STREAM>::loadFile(std::string const& filePath) {
     } else {
         throw std::runtime_error("Not a pcap file.");
     }
-    _rawData = data_t((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    for (auto it = std::istreambuf_iterator<char>(file), tmp = it, end = std::istreambuf_iterator<char>();
+         it != end;) {
+        tmp = it;
+        try {
+            _packets.push_back(PcapPacket_t(it, end, isByteSwap(), _header.snaplen));
+        } catch (std::runtime_error& e) {
+            std::cerr << e.what() << std::endl;
+        }
+        if (it == tmp) { // Move iterator if haven't changed
+            ++it;
+        }
+    }
 }
 
 template<class STREAM>
