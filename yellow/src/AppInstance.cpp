@@ -4,6 +4,7 @@
 #include <QApplication>
 #include <QQmlContext>
 #include <QQmlEngine>
+#include <QQuickItem>
 #include <QDirIterator>
 #include <QDir>
 
@@ -21,6 +22,8 @@ namespace App {
 
         AddFontDir(resourceDir + "/fonts/");
 
+        QString we_are = "KOUKOU - Super Projet";
+        
         _view.reset(new QQuickView());
         _view->setTitle(QGuiApplication::applicationName());
 
@@ -29,8 +32,17 @@ namespace App {
         engine->addImportPath(resourceDir + "/qml");
 
         _view->setSource(QUrl::fromLocalFile(resourceDir + "/qml/App/window.qml"));
+    
         _view->setResizeMode(QQuickView::SizeRootObjectToView);
+    
         _view->showMaximized();
+        
+        
+        QQuickItem *object = _view->QQuickView::rootObject();
+        
+        object->setProperty("text2Text",QVariant(we_are));
+
+        
     }
 
     int Instance::run(int argc, char** argv) {
