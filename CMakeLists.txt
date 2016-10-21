@@ -123,9 +123,20 @@ target_link_libraries(${BIN_NAME} PUBLIC ${LIB_NAME})
 
 find_package(Qt5 COMPONENTS Core Gui Widgets Concurrent Qml Quick REQUIRED)
 
-set_target_properties(${BIN_NAME} PROPERTIES AUTOMOC ON)
-set_target_properties(${BIN_NAME} PROPERTIES AUTOUIC ON)
-target_link_libraries(${BIN_NAME} PUBLIC Qt5::Core PUBLIC Qt5::Widgets PUBLIC Qt5::Gui PUBLIC Qt5::Qml PUBLIC Qt5::Quick PUBLIC Qt5::Concurrent)
+set_target_properties(${BIN_NAME}
+    PROPERTIES
+    AUTOMOC ON
+    AUTOUIC ON
+)
+target_link_libraries(${BIN_NAME}
+    PUBLIC
+    Qt5::Core
+    Qt5::Widgets
+    Qt5::Gui
+    Qt5::Qml
+    Qt5::Quick
+    Qt5::Concurrent
+)
 
 #########
 

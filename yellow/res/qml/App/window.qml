@@ -30,4 +30,15 @@ Rectangle {
             text: Qt.application.organization + " " + Qt.application.domain
         }
     }
+
+    Text {
+        id: text1
+        x: 407
+        y: 206
+        width: 166
+        height: 15
+        color: "#ffffff"
+        text: qsTr("HELLO")
+        font.pixelSize: 12
+    }
 }
