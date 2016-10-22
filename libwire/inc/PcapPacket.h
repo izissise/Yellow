@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <chrono>
 #include <stdint.h>
 
 #include <iostream>
@@ -26,19 +27,19 @@ public:
     template<class STREAM>
     PcapPacket(STREAM& stream, bool swap, size_t maxLength);
 
-    PcapPacket(data_t const& data/* date */);
+    explicit PcapPacket(data_t const& data, std::chrono::time_point<std::chrono::high_resolution_clock> const& date = std::chrono::high_resolution_clock::now());
 
     ~PcapPacket() = default;
 
-    //TODO timestamp to std::date ?
+    std::chrono::time_point<std::chrono::high_resolution_clock> date() const;
 
     data_t const& packet() const { return _packet; };
 
     bool isIncomplete() const { return _header.incl_len != _header.orig_len; };
+    uint32_t size() const { return _header.incl_len; };
 
     data_t getRawData() const;
 protected:
-    bool _needSwap;
     pcaprec_hdr_t _header;
     data_t _packet;
 };
