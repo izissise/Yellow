@@ -45,7 +45,9 @@ protected:
 
 template<class STREAM>
 PcapPacket::PcapPacket(STREAM& stream, bool swap, size_t maxLength) {
-   if (size_t n = stream.read(reinterpret_cast<char*>(&_header), sizeof(_header)).gcount() != sizeof(_header)) {
+   size_t n = 0;
+
+   if ((n = stream.read(reinterpret_cast<char*>(&_header), sizeof(_header)).gcount()) != sizeof(_header)) {
         throw WrongSize("Error parsing packet header.", sizeof(_header) - n, sizeof(_header));
     }
     if (swap) {
@@ -57,9 +59,14 @@ PcapPacket::PcapPacket(STREAM& stream, bool swap, size_t maxLength) {
     if (_header.incl_len > maxLength) {
        std::cerr << "Warning length of packet is larger than max length, continuing anyways." << std::endl;
     }
+//     auto it = std::istreambuf_iterator<char>(stream);
+//     if ((n = std::distance(it, std::istreambuf_iterator<char>())) < _header.incl_len) {
+//         WrongSize("Error parsing packet data.", _header.incl_len - n, _header.incl_len);
+//     }
+//     _packet.assign(it, std::next(it, _header.incl_len));
 
-    auto buff = make_resource([] (size_t n) { return new char[n]; }, [] (char* ptr) { delete[] ptr; }, _header.incl_len);
-    if (size_t n = stream.read(buff.get(), _header.incl_len).gcount() < _header.incl_len) {
+    auto buff = std::make_unique<char[]>(_header.incl_len);
+    if ((n = stream.read(buff.get(), _header.incl_len).gcount()) < _header.incl_len) {
         WrongSize("Error parsing packet data.", _header.incl_len - n, _header.incl_len);
     }
     _packet = std::move(data_t(buff.get(), _header.incl_len));

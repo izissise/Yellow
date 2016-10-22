@@ -80,8 +80,7 @@ void PcapFile<STREAM>::loadFile(std::string const& filePath) {
 
     file.open(filePath, std::ios::in | std::ios::binary);
 
-    size_t n = file.read(reinterpret_cast<char*>(&_header), sizeof(_header)).gcount();
-    if (n != sizeof(_header)) {
+    if (file.read(reinterpret_cast<char*>(&_header), sizeof(_header)).gcount() != sizeof(_header)) {
         throw std::runtime_error("Not a pcap file.");
     }
 
