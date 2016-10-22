@@ -80,8 +80,8 @@ void PcapFile<STREAM>::loadFile(std::string const& filePath) {
 
     file.open(filePath, std::ios::in | std::ios::binary);
 
-    file.read(reinterpret_cast<char*>(&_header), sizeof(_header));
-    if (file.gcount() != sizeof(_header)) {
+    size_t n = file.read(reinterpret_cast<char*>(&_header), sizeof(_header)).gcount();
+    if (n != sizeof(_header)) {
         throw std::runtime_error("Not a pcap file.");
     }
 
@@ -99,16 +99,12 @@ void PcapFile<STREAM>::loadFile(std::string const& filePath) {
     } else {
         throw std::runtime_error("Not a pcap file.");
     }
-    for (auto it = std::istreambuf_iterator<char>(file), tmp = it, end = std::istreambuf_iterator<char>();
-         it != end;) {
-        tmp = it;
+    while (!file.eof()) {
         try {
-            _packets.push_back(PcapPacket(it, end, isByteSwap(), _header.snaplen));
-        } catch (std::runtime_error& e) {
-            std::cerr << e.what() << std::endl;
-        }
-        if (it == tmp) { // Move iterator if haven't changed
-            ++it;
+            _packets.push_back(PcapPacket(file, isByteSwap(), _header.snaplen));
+        } catch (WrongSize& e) {
+            if ((e.getTypeSize() - e.getMissingSize()) != 0 || !file.eof())
+                std::cerr << e.what() << std::endl;
         }
     }
 }
@@ -126,7 +122,7 @@ void PcapFile<STREAM>::saveFile(std::string const& filePath) const {
     std::ostreambuf_iterator<char> outIt(file);
     for (auto const& packet : _packets) {
         auto d = packet.getRawData();
-        outIt = std::copy(std::begin(d), std::end(d), outIt);
+        file.write(d.data(), d.size());
     }
 }
 
@@ -134,6 +130,12 @@ template<class STREAM>
 PcapFile<STREAM>::PcapFile()
 : _needSwap(false) {
     _header.magic_number = magic_number;
+    _header.version_major = 2;
+    _header.version_minor = 4;
+    _header.thiszone = 0;
+    _header.sigfigs = 0;
+    _header.snaplen = 262144;
+    _header.network = 1;
 }
 
 template<class STREAM>

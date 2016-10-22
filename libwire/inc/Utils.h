@@ -29,12 +29,12 @@ T switchEndianness(T nb) {
 }
 
 //! @class WrongSize
-//! An error class throwed when get byte doesn't have enought bytes for the deired
+//! An error class throwed when not enought bytes are present
 class WrongSize : public std::exception {
 public:
     explicit WrongSize(const char* message, size_t missingByte, size_t typeSize)
     : _message(message), _missingByte(missingByte), _typeSize(typeSize) {
-        _message += " Type Size: " + std::to_string(_typeSize)
+        _message += " Wanted Size: " + std::to_string(_typeSize)
         + " Missing Bytes: " + std::to_string(_missingByte);
     }
 

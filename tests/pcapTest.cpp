@@ -52,7 +52,7 @@ public:
         });
 
         gfsioh.registerPath("6.1.pcap", [] (std::stringstream& stream) {
-            stream.write(___basicsniff_pcap, ___basicsniff_pcap_len - 1);
+            stream.write(___basicsniff_pcap, ___basicsniff_pcap_len);
         }, [] (const std::stringstream& stream) {
             (void)stream;
         });
@@ -61,7 +61,7 @@ public:
             (void)stream;
         }, [] (const std::stringstream& stream) {
             std::stringstream ss("");
-            ss.write(___basicsniff_pcap, ___basicsniff_pcap_len - 1);
+            ss.write(___basicsniff_pcap, ___basicsniff_pcap_len);
             if (stream.str() != ss.str()) {
                 throw std::runtime_error("Not intended datas.");
             }
