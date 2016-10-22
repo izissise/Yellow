@@ -80,8 +80,8 @@ protected:
 TEST_CASE_METHOD(pcapIOFixture, "Pcap file tests", "[net][pcap][io]") {
 
     SECTION("Load a good magic number") {
-        Net::PcapFile<FsIOHelper> pcap;
-        REQUIRE_NOTHROW(pcap.loadFile("1.pcap"));
+        Net::PcapFile pcap;
+        REQUIRE_NOTHROW(pcap.loadFile<FsIOHelper>("1.pcap"));
         CHECK(pcap.isByteSwap() == false);
         CHECK(pcap.versionNumber() == std::make_tuple(2, 4));
         CHECK(pcap.timezone() == 0);
@@ -91,8 +91,8 @@ TEST_CASE_METHOD(pcapIOFixture, "Pcap file tests", "[net][pcap][io]") {
     }
 
     SECTION("Load a reverse magic number") {
-        Net::PcapFile<FsIOHelper> pcap;
-        REQUIRE_NOTHROW(pcap.loadFile("2.pcap"));
+        Net::PcapFile pcap;
+        REQUIRE_NOTHROW(pcap.loadFile<FsIOHelper>("2.pcap"));
         CHECK(pcap.isByteSwap() == true);
         CHECK(pcap.versionNumber() == std::make_tuple(2, 4));
         CHECK(pcap.timezone() == 0);
@@ -102,33 +102,33 @@ TEST_CASE_METHOD(pcapIOFixture, "Pcap file tests", "[net][pcap][io]") {
     }
 
     SECTION("Load wrong magic") {
-        Net::PcapFile<FsIOHelper> pcap;
-        CHECK_THROWS_AS(pcap.loadFile("3.pcap"), std::runtime_error);
+        Net::PcapFile pcap;
+        CHECK_THROWS_AS(pcap.loadFile<FsIOHelper>("3.pcap"), std::runtime_error);
     }
 
     SECTION("Load not even large enough for header") {
-        Net::PcapFile<FsIOHelper> pcap;
-        CHECK_THROWS_AS(pcap.loadFile("4.pcap"), std::runtime_error);
+        Net::PcapFile pcap;
+        CHECK_THROWS_AS(pcap.loadFile<FsIOHelper>("4.pcap"), std::runtime_error);
     }
 
     SECTION("Save file") {
-        Net::PcapFile<FsIOHelper> pcap;
+        Net::PcapFile pcap;
         pcap.versionNumber(2, 4);
         pcap.timezone(0);
         pcap.accuracy(0);
         pcap.maxLength(262144);
         pcap.linkType(1);
-        CHECK_NOTHROW(pcap.saveFile("5.pcap"));
+        CHECK_NOTHROW(pcap.saveFile<FsIOHelper>("5.pcap"));
     }
 
     SECTION("Loading a file and saving should be equal") {
-        Net::PcapFile<FsIOHelper> pcap;
-        REQUIRE_NOTHROW(pcap.loadFile("6.1.pcap"));
-        CHECK_NOTHROW(pcap.saveFile("6.2.pcap"));
+        Net::PcapFile pcap;
+        REQUIRE_NOTHROW(pcap.loadFile<FsIOHelper>("6.1.pcap"));
+        CHECK_NOTHROW(pcap.saveFile<FsIOHelper>("6.2.pcap"));
     }
 
     SECTION("Loading a non exsting file shoud throw") {
-        Net::PcapFile<FsIOHelper> pcap;
-        CHECK_THROWS(pcap.loadFile("inexistant.pcap"));
+        Net::PcapFile pcap;
+        CHECK_THROWS(pcap.loadFile<FsIOHelper>("inexistant.pcap"));
     }
 }

@@ -22,7 +22,6 @@
 
 namespace Net {
 
-template<class STREAM = std::fstream>
 class PcapFile
 {
     static const uint32_t magic_number = 0xa1b2c3d4;
@@ -43,10 +42,14 @@ public:
 
     //! @throw std::system_error
     //! @throw std::runtime_error
+    template<class STREAM = std::fstream>
     void loadFile(std::string const& filePath);
 
     //! @throw std::system_error
+    template<class STREAM = std::fstream>
     void saveFile(std::string const& filePath) const;
+
+    void addPacket(Net::PcapPacket packet);
 
     bool isByteSwap() const { return _needSwap; };
 
@@ -69,10 +72,8 @@ private:
     std::vector<PcapPacket> _packets;
 };
 
-typedef PcapFile<> PcapFile_t;
-
 template<class STREAM>
-void PcapFile<STREAM>::loadFile(std::string const& filePath) {
+void PcapFile::loadFile(std::string const& filePath) {
     STREAM file;
     ScopeGuard guard([&] () {
         file.close();
@@ -109,7 +110,7 @@ void PcapFile<STREAM>::loadFile(std::string const& filePath) {
 }
 
 template<class STREAM>
-void PcapFile<STREAM>::saveFile(std::string const& filePath) const {
+void PcapFile::saveFile(std::string const& filePath) const {
     STREAM file;
     ScopeGuard guard([&] () {
         file.close();
@@ -123,29 +124,6 @@ void PcapFile<STREAM>::saveFile(std::string const& filePath) const {
         auto d = packet.getRawData();
         file.write(d.data(), d.size());
     }
-}
-
-template<class STREAM>
-PcapFile<STREAM>::PcapFile()
-: _needSwap(false) {
-    _header.magic_number = magic_number;
-    _header.version_major = 2;
-    _header.version_minor = 4;
-    _header.thiszone = 0;
-    _header.sigfigs = 0;
-    _header.snaplen = 262144;
-    _header.network = 1;
-}
-
-template<class STREAM>
-std::tuple<uint16_t, uint16_t> PcapFile<STREAM>::versionNumber() const {
-    return std::make_tuple(_header.version_major, _header.version_minor);
-}
-
-template<class STREAM>
-void PcapFile<STREAM>::versionNumber(uint16_t major, uint16_t minor) {
-    _header.version_major = major;
-    _header.version_minor = minor;
 }
 
 }
