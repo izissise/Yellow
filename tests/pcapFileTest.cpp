@@ -131,4 +131,5 @@ TEST_CASE_METHOD(pcapIOFixture, "Pcap file tests", "[net][pcap][io]") {
         Net::PcapFile pcap;
         CHECK_THROWS(pcap.loadFile<FsIOHelper>("inexistant.pcap"));
     }
+
 }
