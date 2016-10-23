@@ -15,6 +15,8 @@ namespace Net {
 
 class InterfaceInfo {
 public:
+
+    //! @throw std::system_error
     explicit InterfaceInfo(struct ifaddrs const& ifaInfos);
     ~InterfaceInfo() = default;
 
@@ -22,7 +24,6 @@ public:
     Net::NetAddr getAddr() const { return _addr; };
     Net::NetAddr getNetmask() const { return _netmask; };
     Net::NetAddr getBroadcast() const { return _broadcast; };
-
 
     //Flag infos
     bool isUp() const { return ((_flags & IFF_UP) == IFF_UP); }; //Interface is running.

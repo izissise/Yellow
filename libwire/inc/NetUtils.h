@@ -7,6 +7,7 @@
 
 namespace Net {
 
+//! @throw std::system_error
 std::vector<Net::InterfaceInfo> listInterfaces();
 
 }

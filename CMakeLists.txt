@@ -140,7 +140,6 @@ endif()
 
 # Tests and Metrics
 # *****************************
-
 AddSources("${TEST_DIR}" "Test" TEST_FILES)
 
 # if (THREADS_FOUND)
@@ -150,6 +149,10 @@ AddSources("${TEST_DIR}" "Test" TEST_FILES)
 # Add test target
 # --- enable unit tests if desired ---
 if(BUILD_TESTS)
+  AddSources("${TEST_DIR}/helpers" "Test" test_helper_files)
+  AddSources("${TEST_DIR}/testFiles" "Test" test_tfiles_files)
+
+  set(TEST_FILES ${TEST_FILES} ${test_helper_files} ${test_tfiles_files})
   GENERATE_TEST_TARGET(COVERAGE ${BUILD_TESTS_COVERAGE} VALGRIND ${VALGRIND_CHECK}
                        TARGET_NAME ${BIN_TEST} FILES ${TEST_FILES} LIB_TARGET ${LIB_NAME})
 endif()
