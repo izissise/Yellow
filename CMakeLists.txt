@@ -8,11 +8,14 @@ set(BIN_TEST "tester")
 
 set(LIBINCLUDE_DIR "${PROJECT_SOURCE_DIR}/libwire/inc")
 set(LIBSOURCE_DIR "${PROJECT_SOURCE_DIR}/libwire/src")
-set(BININCLUDE_DIR "${PROJECT_SOURCE_DIR}/yellow/inc")
 set(BINSOURCE_DIR "${PROJECT_SOURCE_DIR}/yellow/src")
-set(BINRESSOURCE_DIR "${PROJECT_SOURCE_DIR}/yellow/res")
+set(BININCLUDE_DIR "${PROJECT_SOURCE_DIR}/yellow/inc")
+set(BINRESSOURCESOURCE_DIR "${PROJECT_SOURCE_DIR}/yellow/res")
 set(TEST_DIR "${PROJECT_SOURCE_DIR}/tests")
 set(DOC_PATH "${PROJECT_SOURCE_DIR}/doc")
+
+
+set(BINRESSOURCE_DIR "${BINRESSOURCESOURCE_DIR}")
 
 # meta
 # ******************************************************************************
@@ -131,11 +134,6 @@ if (BUILD_APP)
     target_link_libraries(${BIN_NAME} PUBLIC Qt5::Core PUBLIC Qt5::Widgets PUBLIC Qt5::Gui PUBLIC Qt5::Qml PUBLIC Qt5::Quick PUBLIC Qt5::Concurrent)
 
     #########
-
-    # copy gui resources
-    # ******************************************************************************
-        add_custom_command(TARGET ${BIN_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${BINRESSOURCE_DIR}" ${PROJECT_BINARY_DIR}/${RESSOURCE_DEST_NAME})
-        add_custom_target(CopyResources ALL COMMAND ${CMAKE_COMMAND} -E copy_directory "${BINRESSOURCE_DIR}" ${PROJECT_BINARY_DIR}/${RESSOURCE_DEST_NAME})
 endif()
 
 # Tests and Metrics
@@ -191,3 +189,13 @@ if(GENERATE_DOC)
                     "${PROJECT_SOURCE_DIR}/${TEST_DIR}" ${DOC_PATH}
         VERSION "${${PROJECT_NAME}_VERSION}")
 endif()
+
+
+# Deb package generation
+INSTALL(TARGETS ${BIN_NAME}
+        RUNTIME DESTINATION "bin"
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib/static)
+
+SET(CPACK_GENERATOR "DEB")
+SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Remi Robert") #required
