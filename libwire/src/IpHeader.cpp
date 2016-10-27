@@ -1,38 +1,47 @@
-#include <iostream>
-
-#include <string.h>
-#include <arpa/inet.h>
-
 #include "IpHeader.h"
 
+#include <iostream>
+#include <cstring>
+
+#include <arpa/inet.h>
+
 namespace Net {
-	IpHeader::IpHeader(unsigned char *buffer) {
-		ip_header = (struct iphdr*)buffer;
-		
-		struct sockaddr_in source,dest;
-		memset(&source, 0, sizeof(source));
-		source.sin_addr.s_addr = ip_header->saddr;
 
-		memset(&dest, 0, sizeof(dest));
-		dest.sin_addr.s_addr = ip_header->daddr;
-		
-		saddr = std::string(inet_ntoa(source.sin_addr));
-		daddr = std::string(inet_ntoa(dest.sin_addr));
+IpHeader::IpHeader(data_t const& buffer) {
+    _ipHeader = *(reinterpret_cast<const iphdr_t*>(buffer.data()));
+    struct sockaddr_storage source, dest;
+    struct sockaddr_in* ipv4ptr;
+
+    std::memset(&source, 0, sizeof(source));
+    std::memset(&dest, 0, sizeof(dest));
+
+    ipv4ptr = reinterpret_cast<struct sockaddr_in*>(&source);
+    ipv4ptr->sin_addr.s_addr = _ipHeader.saddr;
+    ipv4ptr = reinterpret_cast<struct sockaddr_in*>(&dest);
+    ipv4ptr->sin_addr.s_addr = _ipHeader.daddr;
+
+    try {
+        _saddr = reinterpret_cast<struct sockaddr*>(&source);
+        _daddr = reinterpret_cast<struct sockaddr*>(&dest);
+    } catch (std::system_error& e) {
+        std::cerr << e.what() << std::endl;
     }
+}
 
-	IpHeader::~IpHeader() {}
-	bool IpHeader::operator==(const IpHeader& other) const { return true; }
+IpHeader::~IpHeader() {}
+bool IpHeader::operator==(const IpHeader& other) const { (void)other; return true; }
 
-	void IpHeader::debugDisplay() {
-		std::cout << "   |-IP Version          " << (unsigned int)ip_header->version << std::endl;
-		std::cout << "   |-IP Header Length  : " << (unsigned int)ip_header->ihl << std::endl;
-		std::cout << "   |-Type Of Service   : " << (unsigned int)ip_header->tos << std::endl;
-		std::cout << "   |-IP Total Length   : " << (unsigned int)ip_header->tot_len << std::endl;
-		std::cout << "   |-Identification    : " << (unsigned int)ip_header->id << std::endl;
-		std::cout << "   |-TTL               : " << (unsigned int)ip_header->ttl << std::endl;
-		std::cout << "   |-Protocol          : " << (unsigned int)ip_header->protocol << std::endl;
-		std::cout << "   |-Checksum          : " << (unsigned int)ip_header->check << std::endl;
-		std::cout << "   |-Source IP         : " << saddr << std::endl;
-		std::cout << "   |-Destination IP    : " << daddr << std::endl;
-	}
+void IpHeader::debugDisplay() {
+    std::cout << "   |-IP Version          " << static_cast<unsigned int>(_ipHeader.version) << "\n"
+              << "   |-IP Header Length  : " << static_cast<unsigned int>(_ipHeader.ihl) << "\n"
+              << "   |-Type Of Service   : " << static_cast<unsigned int>(_ipHeader.tos) << "\n"
+              << "   |-IP Total Length   : " << static_cast<unsigned int>(_ipHeader.tot_len) << "\n"
+              << "   |-Identification    : " << static_cast<unsigned int>(_ipHeader.id) << "\n"
+              << "   |-TTL               : " << static_cast<unsigned int>(_ipHeader.ttl) << "\n"
+              << "   |-Protocol          : " << static_cast<unsigned int>(_ipHeader.protocol) << "\n"
+              << "   |-Checksum          : " << static_cast<unsigned int>(_ipHeader.check) << "\n"
+              << "   |-Source IP         : " << _saddr << "\n"
+              << "   |-Destination IP    : " << _daddr << std::endl;
+}
+
 }

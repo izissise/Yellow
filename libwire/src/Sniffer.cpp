@@ -1,16 +1,23 @@
 #include "Sniffer.hpp"
 
 namespace Net {
-    Sniffer::Sniffer(PacketReader *packetReader) : _packetReader(packetReader) {}
- 
-    int Sniffer::startListening(InterfaceInfo const &interface) {
-        _packetReader->startListening(interface.getName());
-        return 0;
-    }
 
-    void Sniffer::notifyObserver() {
-        for(std::vector<SnifferObserver *>::iterator it = _observers.begin(); it != _observers.end(); ++it) {
-            (*it)->update();
-        }
+Sniffer::Sniffer(std::unique_ptr<PacketReader> packetReader)
+: _packetReader(std::move(packetReader)) {
+}
+
+void Sniffer::startListening(InterfaceInfo const& interface) {
+    _packetReader->startListening(interface);
+}
+
+void Sniffer::stopListening() {
+    _packetReader->stopListening();
+}
+
+void Sniffer::notifyObserver() {
+    for (auto& obs : _observers) {
+       obs->update();
     }
+}
+
 }

@@ -3,17 +3,19 @@
 #include <netinet/in.h>
 
 namespace Net {
-	Tcp::Tcp(unsigned char *buffer) {
-		tcp_struct = (struct tcphdr*)(buffer);
-	}
 
-	void Tcp::debugDisplay() {
-		std::cout << "TCP Header" << std::endl;
-		std::cout << "   |-Source Port        : " << ntohs(tcp_struct->th_sport) << std::endl;
-		std::cout << "   |-Destination Port   : " << ntohs(tcp_struct->th_dport) << std::endl;
-		std::cout << "   |-Sequence number    : " << ntohs(tcp_struct->th_seq) << std::endl;
-		std::cout << "   |-Acknowledge Number : " << ntohs(tcp_struct->th_ack) << std::endl;
-		std::cout << "   |-Header Length      : " << ntohs(tcp_struct->th_off) << std::endl;
-		std::cout << "   |-Flags              : " << ntohs(tcp_struct->th_flags) << std::endl;
-	}
+Tcp::Tcp(data_t const& buffer)
+: _tcpStruct(*(reinterpret_cast<struct tcphdr const*>(buffer.data()))) {
+}
+
+void Tcp::debugDisplay() {
+    std::cout << "TCP Header" << "\n"
+              << "   |-Source Port        : " << ntohs(_tcpStruct.th_sport) << "\n"
+              << "   |-Destination Port   : " << ntohs(_tcpStruct.th_dport) << "\n"
+              << "   |-Sequence number    : " << ntohs(_tcpStruct.th_seq) << "\n"
+              << "   |-Acknowledge Number : " << ntohs(_tcpStruct.th_ack) << "\n"
+              << "   |-Header Length      : " << ntohs(_tcpStruct.th_off) << "\n"
+              << "   |-Flags              : " << ntohs(_tcpStruct.th_flags) << std::endl;
+}
+
 }
