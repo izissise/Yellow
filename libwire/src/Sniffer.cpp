@@ -1,11 +1,3 @@
-//
-//  Sniffer.cpp
-//  Yellow
-//
-//  Created by Remi Robert on 16/10/2016.
-//
-//
-
 #include "Sniffer.hpp"
 
 namespace Net {
@@ -15,7 +7,7 @@ namespace Net {
         _packetReader->startListening(interface.getName());
         return 0;
     }
-    
+
     void Sniffer::notifyObserver() {
         for(std::vector<SnifferObserver *>::iterator it = _observers.begin(); it != _observers.end(); ++it) {
             (*it)->update();

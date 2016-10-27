@@ -1,11 +1,3 @@
-//
-//  PacketReader.hpp
-//  Yellow
-//
-//  Created by Remi Robert on 16/10/2016.
-//
-//
-
 #ifndef PacketReader_hpp
 #define PacketReader_hpp
 
