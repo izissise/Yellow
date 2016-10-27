@@ -1,11 +1,3 @@
-//
-//  SnifferObserver.hpp
-//  Yellow
-//
-//  Created by Remi Robert on 16/10/2016.
-//
-//
-
 #ifndef SnifferObserver_hpp
 #define SnifferObserver_hpp
 
