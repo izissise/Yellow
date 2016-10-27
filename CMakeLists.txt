@@ -79,11 +79,17 @@ COMPILER_FLAGS(FLAGS "-std=c++14"
 # --- user options ---
 OPTION(BUILD_APP "Decide if the app shall be built or not." ON)
 OPTION(BUILD_TESTS "Decide if the test suite shall be built or not." OFF)
+OPTION(INSTALLABLE "Make build installable, neccessary for package target." OFF)
 CMAKE_DEPENDENT_OPTION(BUILD_TESTS_COVERAGE "Decide if a coverage report should be generated." ON "BUILD_TESTS" OFF)
 CMAKE_DEPENDENT_OPTION(VALGRIND_CHECK "Decide if valgrind should be executed with the test binary to check for memory leaks." ON "BUILD_TESTS" OFF)
 OPTION(CODE_METRICS "Decide if code's metrics should be generated." OFF)
 OPTION(CODE_CHECK   "Decide if code should be checked for common errors." OFF)
 OPTION(GENERATE_DOC "Decide if documentation should be generated." OFF)
+
+
+if(INSTALLABLE)
+    set(BINRESSOURCE_DIR "/usr/share/yellow/res")
+endif()
 
 # sources
 # ******************************************************************************
@@ -197,10 +203,11 @@ INSTALL(TARGETS ${BIN_NAME}
         RUNTIME DESTINATION "bin"
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib/static)
+INSTALL(DIRECTORY ${BINRESSOURCESOURCE_DIR} DESTINATION "/usr/share/yellow/")
 
 
 SET(CPACK_GENERATOR "DEB")
-SET(CPACK_PACKAGE_MAINTAINER "Remi Robert")
+SET(CPACK_PACKAGE_MAINTAINER "Yellow's project menbers")
 SET(CPACK_PACKAGE_CONTACT "noreply@example.com")
 SET(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 SET(CPACK_PACKAGE_VERSION_MAJOR "${TEMPLATE_VERSION_MAJOR}")
@@ -209,6 +216,6 @@ SET(CPACK_PACKAGE_VERSION_PATCH "${TEMPLATE_VERSION_PATCH}")
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Sniff Sniff")
 SET(CPACK_DEBIAN_PACKAGE_SECTION "stable")
 SET(CPACK_PACKAGE_DEBIAN_ARCH "amd64")
-SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libQt5Core (>= 5.0)")
+SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5gui5 (>= 5.6)")
 
 INCLUDE(CPack)
