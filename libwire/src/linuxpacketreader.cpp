@@ -8,11 +8,21 @@ LinuxPacketReader::LinuxPacketReader()
 : _buffer(std::make_unique<char[]>(65536)) {
 }
 
+int setSocket(std::string interface, int protocol) {
+  int fd = socket(AF_INET, SOCK_RAW, protocol);
+  if (fd < 0) {
+    throw lastSystemError();
+    return fd;
+  }
+  setsockopt(fd, SOL_SOCKET, SO_BINDTODEVICE, interface.c_str(), 4);
+  return fd;
+}
+
 void LinuxPacketReader::startListening(Net::InterfaceInfo const& interface) {
     (void)interface;
-    sockets[0] = socket(AF_INET , SOCK_RAW , IPPROTO_TCP);
-    sockets[1] = socket(AF_INET , SOCK_RAW , IPPROTO_UDP);
-    sockets[2] = socket(AF_INET , SOCK_RAW , IPPROTO_ICMP);
+    sockets[0] = setSocket(interface.getName(), IPPROTO_TCP);
+    sockets[1] = setSocket(interface.getName(), IPPROTO_UDP);
+    sockets[2] = setSocket(interface.getName(), IPPROTO_ICMP);
     FD_ZERO(&readset);
 
     int fd_max = 0;
@@ -20,7 +30,7 @@ void LinuxPacketReader::startListening(Net::InterfaceInfo const& interface) {
         int socket = sockets[i];
         if (socket < 0) {
             std::cout << "Socket Error" << std::endl;
-            return ;
+	    throw lastSystemError();
         }
         if (socket > fd_max) {
             fd_max = socket;
