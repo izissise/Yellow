@@ -3,14 +3,16 @@
 #include <netinet/in.h>
 
 namespace Net {
-	Udp::Udp(unsigned char *buffer) {
-		udp_struct = (struct udphdr*)(buffer);
-	}
-	void Udp::debugDisplay() {
-		std::cout << "UDP Header" << std::endl;
-		std::cout << "   |-Source Port      : " << ntohs(udp_struct->source) << std::endl;
-		std::cout << "   |-Destination Port : " << ntohs(udp_struct->dest) << std::endl;
-		std::cout << "   |-UDP Length       : " << ntohs(udp_struct->len) << std::endl;
-		std::cout << "   |-UDP Checksum     : " << ntohs(udp_struct->check) << std::endl;
-	}
+
+Udp::Udp(data_t const& buffer)
+: _udpStruct(*(reinterpret_cast<struct udphdr const*>(buffer.data()))) {
+}
+void Udp::debugDisplay() {
+    std::cout << "UDP Header" << std::endl;
+    std::cout << "   |-Source Port      : " << ntohs(_udpStruct.source) << std::endl;
+    std::cout << "   |-Destination Port : " << ntohs(_udpStruct.dest) << std::endl;
+    std::cout << "   |-UDP Length       : " << ntohs(_udpStruct.len) << std::endl;
+    std::cout << "   |-UDP Checksum     : " << ntohs(_udpStruct.check) << std::endl;
+}
+
 }

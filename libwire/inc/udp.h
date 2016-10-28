@@ -7,27 +7,31 @@
 #include <linux/posix_types.h>
 #include <asm/byteorder.h>
 
+#include "Utils.h"
+
 namespace Net {
-	
-	struct udphdr {
-		u_int16_t	source;
-		u_int16_t	dest;
-		u_int16_t	len;
-		u_int16_t	check;
-	};
 
-	class Udp {
-	private:
-		struct udphdr *udp_struct;
+struct udphdr {
+    int16_t source;
+    int16_t dest;
+    int16_t len;
+    int16_t check;
+};
 
-	public:
-		Udp(unsigned char *buffer);
-		void debugDisplay();
-		int16_t source() const { return udp_struct->source; }
-		int16_t dest() const { return udp_struct->dest; }
-		int16_t len() const { return udp_struct->len; }
-		int16_t check() const { return udp_struct->check; }
-	};
+class Udp {
+
+public:
+    explicit Udp(data_t const& buffer);
+    void debugDisplay();
+    int16_t source() const { return _udpStruct.source; }
+    int16_t dest() const { return _udpStruct.dest; }
+    int16_t len() const { return _udpStruct.len; }
+    int16_t check() const { return _udpStruct.check; }
+
+private:
+    struct udphdr _udpStruct;
+};
+
 }
 
 #endif // UDP_H

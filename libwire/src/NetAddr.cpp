@@ -6,12 +6,20 @@
 
 namespace Net {
 
+NetAddr::NetAddr::NetAddr()
+: _addr("") {
+}
+
 NetAddr::NetAddr(std::string const& addr)
 : _addr(addr) {
 }
 
 NetAddr::NetAddr(struct sockaddr const* addr)
 : _addr(addrStr(addr)) {
+}
+
+void NetAddr::operator=(struct sockaddr const* addr) {
+    _addr = addrStr(addr);
 }
 
 bool NetAddr::operator==(Net::NetAddr const& o) const {
@@ -40,6 +48,11 @@ std::string NetAddr::addrStr(struct sockaddr const* sa) {
         throw lastSystemError();
     }
     return std::string(buff);
+}
+
+std::ostream& operator<<(std::ostream& f, Net::NetAddr const& addr) {
+    f << addr.addr();
+    return f;
 }
 
 }

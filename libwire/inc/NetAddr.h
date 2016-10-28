@@ -12,10 +12,14 @@ namespace Net {
 
 class NetAddr {
 public:
+    NetAddr();
+
     NetAddr(std::string const& addr);
 
     //! @throw std::system_error
     NetAddr(struct sockaddr const* addr);
+    //! @throw std::system_error
+    void operator=(struct sockaddr const* addr);
 
     ~NetAddr() = default;
 
@@ -24,7 +28,7 @@ public:
     bool operator==(Net::NetAddr const& o) const;
     bool operator!=(Net::NetAddr const& o) const;
 
-    operator std::string() const { return _addr; };
+    operator std::string() const { return addr(); };
 
 protected:
     //! @throw std::system_error
@@ -34,6 +38,8 @@ protected:
     std::string _addr;
 
 };
+
+std::ostream& operator<<(std::ostream& f, Net::NetAddr const& addr);
 
 }
 
