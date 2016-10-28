@@ -15,7 +15,7 @@ void Packet::processPacket(data_t const& buffer) {
     unsigned int ip_header_len = ipHeader.ihl() * 4;
     ipHeader.debugDisplay();
 
-    data_t rawData((buffer.data())[ip_header_len], buffer.size() - ip_header_len);
+    data_t rawData(&((buffer.data())[ip_header_len]), buffer.size() - ip_header_len);
     switch (ipHeader.protocol())
     {
     case 1:  //ICMP Protocol

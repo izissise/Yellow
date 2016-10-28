@@ -4,9 +4,10 @@
 #include <memory>
 #include <string>
 #include <chrono>
+#include <iostream>
+
 #include <stdint.h>
 
-#include <iostream>
 
 #include "Utils.h"
 
