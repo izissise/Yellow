@@ -1,6 +1,9 @@
 #include <catch.hpp>
 
+#include <sstream>
+
 #include "PcapPacket.h"
+
 #include <unistd.h>
 
 TEST_CASE("Pcap pcackets tests", "[net][pcap][date]") {
@@ -34,4 +37,21 @@ TEST_CASE("Pcap pcackets tests", "[net][pcap][date]") {
         CHECK(packet.getRawData() == raw);
     }
 
+    SECTION("Should throw when header is not the right size") {
+        std::stringstream ss;
+
+        char header[] = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00";
+        ss.write(header, sizeof(header) - 1);
+        REQUIRE_THROWS_AS(Net::PcapPacket(ss, false, 2000), WrongSize);
+    }
+
+    SECTION("Should throw when the size in header is not the right size") {
+        std::stringstream ss;
+        char d[] = "\x85\x35\x57";
+        char header[] = "\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00";
+        data_t data(d, sizeof(d) - 1);
+        data_t raw = data_t(header, sizeof(header) - 1) + data;
+        ss.write(raw.data(), raw.size());
+        REQUIRE_THROWS_AS(Net::PcapPacket(ss, false, 2000), WrongSize);
+    }
 }
