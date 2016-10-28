@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.0.2)
 
-project(Yellow)
+set(PROJECT_NAME "Yellow")
+project(${PROJECT_NAME})
 
 set(BIN_NAME "yellow")
 set(LIB_NAME "wire")
@@ -8,11 +9,14 @@ set(BIN_TEST "tester")
 
 set(LIBINCLUDE_DIR "${PROJECT_SOURCE_DIR}/libwire/inc")
 set(LIBSOURCE_DIR "${PROJECT_SOURCE_DIR}/libwire/src")
-set(BININCLUDE_DIR "${PROJECT_SOURCE_DIR}/yellow/inc")
 set(BINSOURCE_DIR "${PROJECT_SOURCE_DIR}/yellow/src")
-set(BINRESSOURCE_DIR "${PROJECT_SOURCE_DIR}/yellow/res")
+set(BININCLUDE_DIR "${PROJECT_SOURCE_DIR}/yellow/inc")
+set(BINRESSOURCESOURCE_DIR "${PROJECT_SOURCE_DIR}/yellow/res")
 set(TEST_DIR "${PROJECT_SOURCE_DIR}/tests")
 set(DOC_PATH "${PROJECT_SOURCE_DIR}/doc")
+
+
+set(BINRESSOURCE_DIR "${BINRESSOURCESOURCE_DIR}")
 
 # meta
 # ******************************************************************************
@@ -75,11 +79,17 @@ COMPILER_FLAGS(FLAGS "-std=c++14"
 # --- user options ---
 OPTION(BUILD_APP "Decide if the app shall be built or not." ON)
 OPTION(BUILD_TESTS "Decide if the test suite shall be built or not." OFF)
+OPTION(INSTALLABLE "Make build installable, neccessary for package target." OFF)
 CMAKE_DEPENDENT_OPTION(BUILD_TESTS_COVERAGE "Decide if a coverage report should be generated." ON "BUILD_TESTS" OFF)
 CMAKE_DEPENDENT_OPTION(VALGRIND_CHECK "Decide if valgrind should be executed with the test binary to check for memory leaks." ON "BUILD_TESTS" OFF)
 OPTION(CODE_METRICS "Decide if code's metrics should be generated." OFF)
 OPTION(CODE_CHECK   "Decide if code should be checked for common errors." OFF)
 OPTION(GENERATE_DOC "Decide if documentation should be generated." OFF)
+
+
+if(INSTALLABLE)
+    set(BINRESSOURCE_DIR "/usr/share/yellow/res")
+endif()
 
 # sources
 # ******************************************************************************
@@ -131,11 +141,6 @@ if (BUILD_APP)
     target_link_libraries(${BIN_NAME} PUBLIC Qt5::Core PUBLIC Qt5::Widgets PUBLIC Qt5::Gui PUBLIC Qt5::Qml PUBLIC Qt5::Quick PUBLIC Qt5::Concurrent)
 
     #########
-
-    # copy gui resources
-    # ******************************************************************************
-        add_custom_command(TARGET ${BIN_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${BINRESSOURCE_DIR}" ${PROJECT_BINARY_DIR}/${RESSOURCE_DEST_NAME})
-        add_custom_target(CopyResources ALL COMMAND ${CMAKE_COMMAND} -E copy_directory "${BINRESSOURCE_DIR}" ${PROJECT_BINARY_DIR}/${RESSOURCE_DEST_NAME})
 endif()
 
 # Tests and Metrics
@@ -191,3 +196,26 @@ if(GENERATE_DOC)
                     "${PROJECT_SOURCE_DIR}/${TEST_DIR}" ${DOC_PATH}
         VERSION "${${PROJECT_NAME}_VERSION}")
 endif()
+
+
+# Deb package generation
+INSTALL(TARGETS ${BIN_NAME}
+        RUNTIME DESTINATION "bin"
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib/static)
+INSTALL(DIRECTORY ${BINRESSOURCESOURCE_DIR} DESTINATION "/usr/share/yellow/")
+
+
+SET(CPACK_GENERATOR "DEB")
+SET(CPACK_PACKAGE_MAINTAINER "Yellow's project menbers")
+SET(CPACK_PACKAGE_CONTACT "noreply@example.com")
+SET(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
+SET(CPACK_PACKAGE_VERSION_MAJOR "${TEMPLATE_VERSION_MAJOR}")
+SET(CPACK_PACKAGE_VERSION_MINOR "${TEMPLATE_VERSION_MINOR}")
+SET(CPACK_PACKAGE_VERSION_PATCH "${TEMPLATE_VERSION_PATCH}")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Sniff Sniff")
+SET(CPACK_DEBIAN_PACKAGE_SECTION "stable")
+SET(CPACK_PACKAGE_DEBIAN_ARCH "amd64")
+SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5gui5 (>= 5.6)")
+
+INCLUDE(CPack)
