@@ -20,7 +20,7 @@ public:
 
     void startListening(Net::InterfaceInfo const& interface) override;
     void stopListening() override;
-    void nextPacket() override;
+    Net::Packet nextPacket() const override;
 private:
     std::unique_ptr<char[]> _buffer;
     std::array<int, 3> sockets;

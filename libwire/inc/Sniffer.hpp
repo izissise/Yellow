@@ -18,6 +18,7 @@ public:
     ~Sniffer() = default;
     void startListening(InterfaceInfo const& interface);
     void stopListening();
+    Net::Packet nextPacket() const;
 
 private:
     void notifyObserver();

@@ -10,6 +10,10 @@ void Sniffer::startListening(InterfaceInfo const& interface) {
     _packetReader->startListening(interface);
 }
 
+Net::Packet Sniffer::nextPacket() const {
+  return _packetReader->nextPacket();
+}
+
 void Sniffer::stopListening() {
     _packetReader->stopListening();
 }

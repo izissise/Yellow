@@ -25,6 +25,7 @@ void Packet::processPacket(data_t const& buffer) {
     case 6: {
         //TCP Protocol
         Net::Tcp tcp(rawData);
+	type = TCP;
         tcp.debugDisplay();
         //print_tcp_packet(buffer , size);
         break;
@@ -32,6 +33,7 @@ void Packet::processPacket(data_t const& buffer) {
     case 17: {
         //UDP Protocol
         Net::Udp udp(rawData);
+	type = UDP;
         udp.debugDisplay();
         //print_udp_packet(buffer , size);
         break;

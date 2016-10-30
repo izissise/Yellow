@@ -44,7 +44,7 @@ void LinuxPacketReader::stopListening() {
 
 }
 
-void LinuxPacketReader::nextPacket() {
+Net::Packet LinuxPacketReader::nextPacket() const {
     int result;
     ssize_t data_size;
     socklen_t saddr_size;
@@ -66,8 +66,10 @@ void LinuxPacketReader::nextPacket() {
                 throw lastSystemError();
             }
             Net::Packet packet = Net::Packet(data_t(_buffer.get(), data_size));
+	    return packet;
         }
     }
+    return Net::Packet(NULL);
 }
 
 }
