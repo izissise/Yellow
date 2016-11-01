@@ -12,7 +12,7 @@ namespace Net {
     TCP,
     ICMP
   };
-  
+
 class Packet
 {
 public:
