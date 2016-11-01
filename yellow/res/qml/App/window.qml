@@ -6,6 +6,7 @@ Rectangle {
     id: root;
     width: 1024;
     height: 768;
+    property alias text2Text: text2.text
 
     color: "#282C34"
 
@@ -30,4 +31,25 @@ Rectangle {
             text: Qt.application.organization + " " + Qt.application.domain
         }
     }
+
+    Text {
+        id: text1
+        x: 407
+        y: 206
+        width: 166
+        height: 15
+        color: "#ffffff"
+        text: qsTr("HELLO")
+        font.pixelSize: 12
+    }
+    Text {
+        id: text2
+        x: 607
+        y: 406
+        width: 129
+        height: 15
+        color: "#ffffff"
+        font.pixelSize: 12
+    }
+
 }

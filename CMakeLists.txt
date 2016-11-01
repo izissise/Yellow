@@ -133,7 +133,20 @@ if (BUILD_APP)
 
 
     ## QT5 ##
-
+    set_target_properties(${BIN_NAME}
+        PROPERTIES
+        AUTOMOC ON
+        AUTOUIC ON
+    )
+    target_link_libraries(${BIN_NAME}
+        PUBLIC
+        Qt5::Core
+        Qt5::Widgets
+        Qt5::Gui
+        Qt5::Qml
+        Qt5::Quick
+        Qt5::Concurrent
+    )
     find_package(Qt5 COMPONENTS Core Gui Widgets Concurrent Qml Quick REQUIRED)
 
     set_target_properties(${BIN_NAME} PROPERTIES AUTOMOC ON)
