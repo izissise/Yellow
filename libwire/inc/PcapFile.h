@@ -50,6 +50,7 @@ public:
     void saveFile(std::string const& filePath) const;
 
     void addPacket(Net::PcapPacket packet);
+    std::vector<Net::PcapPacket> const& packets() const { return _packets; }
 
     bool isByteSwap() const { return _needSwap; };
 
