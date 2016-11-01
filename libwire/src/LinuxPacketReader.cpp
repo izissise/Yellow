@@ -5,19 +5,21 @@
 namespace Net {
 
 LinuxPacketReader::LinuxPacketReader()
-: _buffer(std::make_unique<uint8_t[]>(65536)) {
+: _sockets({ std::make_unique<Socket<Tcp>>(),
+             std::make_unique<Socket<Udp>>(),
+             std::make_unique<Socket<Icmp>>() }),
+ _buffer(std::make_unique<uint8_t[]>(65536)) {
 }
 
 void LinuxPacketReader::startListening(Net::InterfaceInfo const& interface) {
-    (void)interface;
-    sockets[0] = createRAWSocket(interface, IPPROTO_TCP);
-    sockets[1] = createRAWSocket(interface, IPPROTO_UDP);
-    sockets[2] = createRAWSocket(interface, IPPROTO_ICMP);
+    for (auto& sock : _sockets) {
+       sock->startListening(interface);
+    }
     FD_ZERO(&readset);
 
     int fd_max = 0;
     for (int i = 0; i < 3; i++) {
-        int socket = sockets[i];
+        int socket = _sockets[i]->getFd();
         if (socket < 0) {
             std::cout << "Socket Error" << std::endl;
 	    throw lastSystemError();
@@ -31,7 +33,9 @@ void LinuxPacketReader::startListening(Net::InterfaceInfo const& interface) {
 }
 
 void LinuxPacketReader::stopListening() {
-
+    for (auto& sock : _sockets) {
+        sock->stopListening();
+    }
 }
 
 Net::Packet LinuxPacketReader::nextPacket() const {
@@ -45,7 +49,7 @@ Net::Packet LinuxPacketReader::nextPacket() const {
     (void)result;
     std::cout << "set socket ok" << std::endl;;
     for (int i = 0; i < 3; i++) {
-        int socket = sockets[i];
+        int socket = _sockets[i]->getFd();
         if (FD_ISSET(socket, &readfs)) {
             std::cout << "read fd ready : " << socket << std::endl;
             saddr_size = sizeof saddr;
@@ -60,15 +64,6 @@ Net::Packet LinuxPacketReader::nextPacket() const {
         }
     }
     return Net::Packet(NULL);
-}
-
-int LinuxPacketReader::createRAWSocket(Net::InterfaceInfo const& interface, int protocol) const {
-    int fd = socket(AF_INET, SOCK_RAW, protocol);
-    if (fd < 0) {
-        throw lastSystemError();
-    }
-    setsockopt(fd, SOL_SOCKET, SO_BINDTODEVICE, interface.getName().addr().c_str(), 4);
-    return fd;
 }
 
 }

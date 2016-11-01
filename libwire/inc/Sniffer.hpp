@@ -16,7 +16,11 @@ class Sniffer {
 public:
     explicit Sniffer(std::unique_ptr<PacketReader> packetReader);
     ~Sniffer() = default;
+
+    //! @throw std::system_error
     void startListening(InterfaceInfo const& interface);
+
+    //! @throw std::system_error
     void stopListening();
     Net::Packet nextPacket() const;
 

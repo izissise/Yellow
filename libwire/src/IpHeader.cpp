@@ -8,7 +8,7 @@
 namespace Net {
 
 IpHeader::IpHeader(data_t const& buffer) {
-    if (buffer.length() > sizeof(iphdr_t)) {
+    if (buffer.length() < sizeof(iphdr_t)) {
       throw WrongSize("Error parsing ip header", sizeof(iphdr_t) - buffer.length(), sizeof(iphdr_t));
     }
     _ipHeader = *(reinterpret_cast<const iphdr_t*>(buffer.data()));

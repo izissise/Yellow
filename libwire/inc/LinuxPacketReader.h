@@ -9,8 +9,15 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
+#include "Socket.h"
+#include "Tcp.h"
+#include "Udp.h"
+#include "Icmp.h"
+
 #include "PacketReader.hpp"
 #include "Packet.h"
+
+#include "Utils.h"
 
 namespace Net {
 
@@ -19,16 +26,17 @@ public:
     LinuxPacketReader();
     virtual ~LinuxPacketReader() = default;
 
+    //! @throw std::system_error
     void startListening(Net::InterfaceInfo const& interface) override;
+
+    //! @throw std::system_error
     void stopListening() override;
+
     Net::Packet nextPacket() const override;
 
 private:
-    int createRAWSocket(Net::InterfaceInfo const& interface, int protocol) const;
-
-private:
+    std::array<std::unique_ptr<ISocket>, 3> _sockets;
     std::unique_ptr<uint8_t[]> _buffer;
-    std::array<int, 3> sockets;
     fd_set readset;
 };
 

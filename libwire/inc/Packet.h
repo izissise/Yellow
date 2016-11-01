@@ -16,11 +16,11 @@ namespace Net {
 class Packet
 {
 public:
-    Net::IpHeader ipHeader;
-    PacketType type;
     Packet(data_t const& buffer);
 
 private:
+    Net::IpHeader ipHeader;
+    PacketType type;
     void processPacket(data_t const& buffer);
 };
 
