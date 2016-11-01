@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 
 #include "PacketReader.hpp"
+#include "Packet.h"
 
 namespace Net {
 

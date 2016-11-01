@@ -10,7 +10,7 @@
 #include "Utils.h"
 
 namespace Net {
-	
+
 struct tcphdr {
     u_short	th_sport;		/* source port */
     u_short	th_dport;		/* destination port */

@@ -1,8 +1,8 @@
-#include "packet.h"
+#include "Packet.h"
 
 #include "IpHeader.h"
-#include "udp.h"
-#include "tcp.h"
+#include "Udp.h"
+#include "Tcp.h"
 
 namespace Net {
 

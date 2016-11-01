@@ -1,6 +1,6 @@
-#include "linuxpacketreader.h"
+#include "LinuxPacketReader.h"
 
-#include "packet.h"
+#include "Packet.h"
 
 namespace Net {
 
