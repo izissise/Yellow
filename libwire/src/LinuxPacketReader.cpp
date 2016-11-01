@@ -5,24 +5,14 @@
 namespace Net {
 
 LinuxPacketReader::LinuxPacketReader()
-: _buffer(std::make_unique<char[]>(65536)) {
-}
-
-int setSocket(std::string interface, int protocol) {
-  int fd = socket(AF_INET, SOCK_RAW, protocol);
-  if (fd < 0) {
-    throw lastSystemError();
-    return fd;
-  }
-  setsockopt(fd, SOL_SOCKET, SO_BINDTODEVICE, interface.c_str(), 4);
-  return fd;
+: _buffer(std::make_unique<uint8_t[]>(65536)) {
 }
 
 void LinuxPacketReader::startListening(Net::InterfaceInfo const& interface) {
     (void)interface;
-    sockets[0] = setSocket(interface.getName(), IPPROTO_TCP);
-    sockets[1] = setSocket(interface.getName(), IPPROTO_UDP);
-    sockets[2] = setSocket(interface.getName(), IPPROTO_ICMP);
+    sockets[0] = createRAWSocket(interface, IPPROTO_TCP);
+    sockets[1] = createRAWSocket(interface, IPPROTO_UDP);
+    sockets[2] = createRAWSocket(interface, IPPROTO_ICMP);
     FD_ZERO(&readset);
 
     int fd_max = 0;
@@ -70,6 +60,15 @@ Net::Packet LinuxPacketReader::nextPacket() const {
         }
     }
     return Net::Packet(NULL);
+}
+
+int LinuxPacketReader::createRAWSocket(Net::InterfaceInfo const& interface, int protocol) const {
+    int fd = socket(AF_INET, SOCK_RAW, protocol);
+    if (fd < 0) {
+        throw lastSystemError();
+    }
+    setsockopt(fd, SOL_SOCKET, SO_BINDTODEVICE, interface.getName().addr().c_str(), 4);
+    return fd;
 }
 
 }

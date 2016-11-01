@@ -21,7 +21,7 @@ std::chrono::time_point<std::chrono::high_resolution_clock> PcapPacket::date() c
 }
 
 data_t PcapPacket::getRawData() const {
-    return data_t(reinterpret_cast<const char*>(&_header), sizeof(_header)) + _packet;
+    return data_t(reinterpret_cast<const uint8_t*>(&_header), sizeof(_header)) + _packet;
 }
 
 }

@@ -119,10 +119,9 @@ void PcapFile::saveFile(std::string const& filePath) const {
     file.open(filePath, std::ios::out | std::ios::trunc | std::ios::binary);
 
     file.write(reinterpret_cast<const char*>(&_header), sizeof(_header));
-    std::ostreambuf_iterator<char> outIt(file);
     for (auto const& packet : _packets) {
         auto d = packet.getRawData();
-        file.write(d.data(), d.size());
+        file.write(reinterpret_cast<const char*>(d.data()), d.size());
     }
 }
 

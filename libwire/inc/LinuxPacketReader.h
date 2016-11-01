@@ -22,8 +22,12 @@ public:
     void startListening(Net::InterfaceInfo const& interface) override;
     void stopListening() override;
     Net::Packet nextPacket() const override;
+
 private:
-    std::unique_ptr<char[]> _buffer;
+    int createRAWSocket(Net::InterfaceInfo const& interface, int protocol) const;
+
+private:
+    std::unique_ptr<uint8_t[]> _buffer;
     std::array<int, 3> sockets;
     fd_set readset;
 };

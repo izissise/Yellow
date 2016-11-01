@@ -66,7 +66,7 @@ PcapPacket::PcapPacket(STREAM& stream, bool swap, size_t maxLength) {
     if ((n = stream.read(buff.get(), _header.incl_len).gcount()) < _header.incl_len) {
         throw WrongSize("Error parsing packet data.", _header.incl_len - n, _header.incl_len);
     }
-    _packet = std::move(data_t(buff.get(), _header.incl_len));
+    _packet = std::move(data_t(reinterpret_cast<uint8_t*>(buff.get()), _header.incl_len));
 }
 
 }
