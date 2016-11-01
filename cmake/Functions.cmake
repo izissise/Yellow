@@ -1,7 +1,7 @@
 function(AddSources rel_path group_name list_src)
   message(STATUS "   > ${rel_path} >> ${group_name}")
    include_directories(${rel_path})
-  file(GLOB list_globbed "${rel_path}/*.h" "${rel_path}/*.cpp" "${rel_path}/*.cxx" "${rel_path}/*.hpp")
+  file(GLOB list_globbed "${rel_path}/*.h" "${rel_path}/*.c" "${rel_path}/*.cpp" "${rel_path}/*.cxx" "${rel_path}/*.hpp")
   foreach(file ${list_globbed})
     message(STATUS "     - ${file}")
   endforeach()

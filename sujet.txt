@@ -51,9 +51,14 @@ You also must provide unit tests for your software.
 
 
 - Mandatory features -
-* live packet capture from raw sockets
-* packet capture to file (must be pcap compatible)
-* loading capture from file (must be able to load a pcap file)
+* User documentation
+* Techinical Documentation (doxygen)
+* Complete testing environnement
+* Debian package and install
+\ Interface
+\ live packet capture from raw sockets
+| packet capture to file (must be pcap compatible)
+| loading capture from file (must be able to load a pcap file)
 * packet filtering (protobol and port, source ip, destination ip, ...)
 * packet forging
 * packet contents visualization
@@ -67,6 +72,7 @@ You also must provide unit tests for your software.
 * login/passwords aggregator
 * service fingerprinting
 * DNS Poisoning
+* Scripting language (Lua)
 
 
 

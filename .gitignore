@@ -70,6 +70,7 @@ _ReSharper*/
 .project
 .settings/
 build/
+build2/
 
 # CMake
 /build
