@@ -14,19 +14,6 @@ namespace Net {
 
 class ARawSocket {
 public:
-    enum Version {
-        V4 = AF_INET,
-        V6 = AF_INET6
-    };
-
-    enum Protocol {
-        TCP = IPPROTO_TCP,
-        UDP = IPPROTO_UDP,
-        ICMP = IPPROTO_ICMP,
-        RAW = IPPROTO_RAW
-    };
-
-public:
     ARawSocket(std::function<void (data_t const& data)> readCallback);
     virtual ~ARawSocket() = default;
 

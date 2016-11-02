@@ -4,13 +4,15 @@
 #include "ARawSocket.h"
 #include "RawData.h"
 
+#include "NetUtils.h"
+
 namespace Net {
 
 class LinuxRawSocket : public ARawSocket {
     static constexpr size_t buffSize = 64 * 1024;
 
 public:
-    explicit LinuxRawSocket(ARawSocket::Version version, Net::ARawSocket::Protocol protocol, std::function<void (data_t const& data)> readCallback);
+    explicit LinuxRawSocket(Net::Version version, Net::Protocol protocol, std::function<void (data_t const& data)> readCallback);
     virtual ~LinuxRawSocket();
 
     //! @throw std::system_error

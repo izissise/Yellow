@@ -8,7 +8,7 @@ namespace Net {
 
 uint8_t LinuxRawSocket::_sharedBuffer[LinuxRawSocket::buffSize];
 
-LinuxRawSocket::LinuxRawSocket(Net::ARawSocket::Version version, Net::ARawSocket::Protocol protocol, std::function<void (data_t const& data)> readCallback)
+LinuxRawSocket::LinuxRawSocket(Net::Version version, Net::Protocol protocol, std::function<void (data_t const& data)> readCallback)
 : ARawSocket(readCallback) {
     _fd = socket(version, SOCK_RAW, protocol);
     if (_fd < 0) {

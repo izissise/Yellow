@@ -30,7 +30,7 @@ namespace Net {
         __u8	ttl;
         __u8	protocol;
         __sum16	check;
-        __be32	saddr; // Does is work for ipv6 addresses?
+        __be32	saddr;
         __be32	daddr;
     } iphdr_t;
 	

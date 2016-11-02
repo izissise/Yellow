@@ -3,15 +3,9 @@
 
 #include "IpHeader.h"
 
-#include "Utils.h"
+#include "NetUtils.h"
 
 namespace Net {
-
-  enum PacketType {
-    UDP,
-    TCP,
-    ICMP
-  };
 
 class Packet
 {
@@ -19,9 +13,11 @@ public:
     Packet(data_t const& buffer);
 
 private:
-    Net::IpHeader ipHeader;
-    PacketType type;
     void processPacket(data_t const& buffer);
+
+private:
+    Net::IpHeader _ipHeader;
+    Protocol _type;
 };
 
 }
