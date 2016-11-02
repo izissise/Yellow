@@ -34,8 +34,8 @@ Rectangle {
 
     Text {
         id: text1
-        x: 407
-        y: 206
+        x: 259
+        y: 142
         width: 166
         height: 15
         color: "#ffffff"
@@ -44,12 +44,38 @@ Rectangle {
     }
     Text {
         id: text2
-        x: 607
-        y: 406
+        x: 419
+        y: 142
         width: 129
         height: 15
         color: "#ffffff"
         font.pixelSize: 12
+    }
+
+
+    ListView {
+        x: 8
+        y: 223
+        width: 1008; height: 522
+
+        Component {
+            id: datasDelegate
+            Rectangle {
+                id: wrapper
+                width: 180
+                height: dataInfo.height
+                color: ListView.isCurrentItem ? "black" : "red"
+                Text {
+                    id: dataInfo
+                    text: name + ": " + number
+                    color: wrapper.ListView.isCurrentItem ? "red" : "black"
+                }
+            }
+        }
+
+        model: DataModel {}
+        delegate: datasDelegate
+        focus: true
     }
 
 }

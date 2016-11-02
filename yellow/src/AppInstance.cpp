@@ -10,8 +10,10 @@
 
 #include "meta.h"
 
-namespace App {
 
+namespace App {
+ 
+    
     void Instance::init() {
         QApplication::setOrganizationName(Meta::orgName);
         QApplication::setOrganizationDomain(Meta::orgDomain);
@@ -35,13 +37,27 @@ namespace App {
     
         _view->setResizeMode(QQuickView::SizeRootObjectToView);
     
-        _view->showMaximized();
-        
         
         QQuickItem *object = _view->QQuickView::rootObject();
         
+        ///// setup data list
+        QStringList *qlist = new QStringList();
+        
+        qlist->append(("Item 1"));
+        qlist->append(("Item 2"));
+        qlist->append(("Item 3"));
+        qlist->append(("Item 4"));
+        qlist->append(("Item 5"));
+        
+        object->setProperty("DataModel", QVariant::fromValue(qlist));
+        
+        /////
+        
         object->setProperty("text2Text",QVariant(we_are));
 
+        
+        
+        _view->show();
         
     }
 
