@@ -1,12 +1,13 @@
 import QtQuick 2.6
 
-import Lib 1.0 as Lib
+//import Lib 1.0 as Lib
 
 Rectangle {
     id: root;
     width: 1024;
     height: 768;
     property alias text2Text: text2.text
+    property alias myModel: listview1.model
 
     color: "#282C34"
 
@@ -54,28 +55,31 @@ Rectangle {
 
 
     ListView {
-        x: 8
-        y: 223
-        width: 1008; height: 522
+        id: listview1
+        x: -6
+        y: 212
+        width: 1016; height: 506
 
-        Component {
-            id: datasDelegate
-            Rectangle {
-                id: wrapper
-                width: 180
-                height: dataInfo.height
-                color: ListView.isCurrentItem ? "black" : "red"
-                Text {
-                    id: dataInfo
-                    text: name + ": " + number
-                    color: wrapper.ListView.isCurrentItem ? "red" : "black"
-                }
-            }
+        model: myModel
+        delegate: Rectangle {
+            height: 25
+            width: 100
+            Text { text: modelData }
         }
-
-        model: DataModel {}
-        delegate: datasDelegate
-        focus: true
     }
 
+    /*ListView {
+        width: 100; height: 100
+        id: listview1
+        x: 8
+        y: 209
+
+        model: myModel
+        delegate: Rectangle {
+            height: 25
+            width: 100
+            color: model.modelData.color
+            Text { text: name }
+        }
+    } */
 }

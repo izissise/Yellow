@@ -14,6 +14,16 @@
 namespace App {
  
     
+//    class DataObject : public QObject
+//    {
+//        Q_OBJECT
+//        
+//        Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
+//        Q_PROPERTY(QString color READ color WRITE setColor NOTIFY colorChanged)
+//        
+//    };
+
+    
     void Instance::init() {
         QApplication::setOrganizationName(Meta::orgName);
         QApplication::setOrganizationDomain(Meta::orgDomain);
@@ -40,16 +50,33 @@ namespace App {
         
         QQuickItem *object = _view->QQuickView::rootObject();
         
+        
+//        QList<QObject*> dataList;
+//        dataList.append(new DataObject("Item 1", "red"));
+//        dataList.append(new DataObject("Item 2", "green"));
+//        dataList.append(new DataObject("Item 3", "blue"));
+//        dataList.append(new DataObject("Item 4", "yellow"));
+//        
+//        QQuickView view;
+//        view.setResizeMode(QQuickView::SizeRootObjectToView);
+        
+        
+        
+        
+        // http://doc.qt.io/qt-5/qml-qtquick-listview.html
+        
+        //
+        
+        //passing custom object
         ///// setup data list
-        QStringList *qlist = new QStringList();
+        QStringList dataList;
+        dataList.append("Item 1");
+        dataList.append("Item 2");
+        dataList.append("Item 3");
+        dataList.append("Item 4");
         
-        qlist->append(("Item 1"));
-        qlist->append(("Item 2"));
-        qlist->append(("Item 3"));
-        qlist->append(("Item 4"));
-        qlist->append(("Item 5"));
-        
-        object->setProperty("DataModel", QVariant::fromValue(qlist));
+        object->setProperty("myModel", QVariant::fromValue(dataList));
+
         
         /////
         

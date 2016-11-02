@@ -19,7 +19,12 @@ namespace App {
 
     private:
         std::unique_ptr<QQuickView> _view;
+        
+        
     };
+    
+
 }
+
 
 #endif
