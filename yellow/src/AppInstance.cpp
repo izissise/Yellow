@@ -70,10 +70,10 @@ namespace App {
         //passing custom object
         ///// setup data list
         QStringList dataList;
-        dataList.append("Item 1");
-        dataList.append("Item 2");
-        dataList.append("Item 3");
-        dataList.append("Item 4");
+        dataList.append("Simple listview");
+        dataList.append("declared in appInstance.cpp");
+        dataList.append("avec des lignes");
+        dataList.append("etc.");
         
         object->setProperty("myModel", QVariant::fromValue(dataList));
 
