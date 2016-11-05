@@ -1,14 +1,15 @@
 #ifndef PACKET_H
 #define PACKET_H
 
-#include "IpHeader.h"
+#include <algorithm>
 
+#include "IpHeader.h"
+#include "PcapPacket.h"
 #include "NetUtils.h"
 
 namespace Net {
 
-class Packet
-{
+class Packet : public PcapPacket {
 public:
     Packet(data_t const& buffer);
 
@@ -16,8 +17,12 @@ private:
     void processPacket(data_t const& buffer);
 
 private:
-    Net::IpHeader _ipHeader;
-    Protocol _type;
+    //Ethernet Header
+    Net::IIpHeader* _ipHeader = nullptr; // Will be in ethernet header
+
+// Class Objects storage
+private:
+    uint8_t _ipHeaderStore[std::max(sizeof(IpHeaderV4), sizeof(IpHeaderV6))];
 };
 
 }
