@@ -1,9 +1,13 @@
 #include "LinuxRawSocket.h"
 
+#include <cstring>
+
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netinet/in.h>
 #include <netinet/ether.h>
+
+#include "ScopeGuard.h"
 
 namespace Net {
 
@@ -21,12 +25,24 @@ LinuxRawSocket::~LinuxRawSocket() {
     close(_fd);
 }
 
-void LinuxRawSocket::startSniffing(Net::InterfaceInfo const& interface) {
+void LinuxRawSocket::startSniffing(Net::InterfaceInfo const& interface, bool promiscuous) {
     auto iface = interface.getName().addr();
+    ifreq ifopts;
+    int sockopt;
+    ScopeGuard sg([this] () { close(_fd); });
+
+    if (promiscuous) {
+        std::memcpy(ifopts.ifr_name, iface.c_str(), iface.size());
+        if (ioctl(_fd, SIOCGIFFLAGS, &ifopts) < 0)
+            throw lastSystemError();
+        ifopts.ifr_flags |= IFF_PROMISC;
+        if (ioctl(_fd, SIOCSIFFLAGS, &ifopts) < 0)
+            throw lastSystemError();
+    }
+    if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &sockopt, sizeof(sockopt)) < 0)
+        throw lastSystemError();
     if (setsockopt(_fd, SOL_SOCKET, SO_BINDTODEVICE, iface.c_str(), static_cast<socklen_t>(iface.size())) < 0) {
-        auto err = lastSystemError();
-        close(_fd);
-        throw err;
+        throw lastSystemError();
     }
 }
 

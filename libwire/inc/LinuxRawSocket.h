@@ -19,7 +19,7 @@ public:
     virtual ~LinuxRawSocket();
 
     //! @throw std::system_error
-    void startSniffing(Net::InterfaceInfo const& interface) override;
+    void startSniffing(Net::InterfaceInfo const& interface, bool promiscuous) override;
 
     int getFd() const { return _fd; }
 

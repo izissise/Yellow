@@ -12,6 +12,7 @@ namespace Net {
 class Packet : public PcapPacket {
 public:
     Packet(data_t const& buffer);
+    virtual ~Packet() = default;
 
 private:
     void processPacket(data_t const& buffer);

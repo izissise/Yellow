@@ -19,7 +19,7 @@ public:
     virtual ~ARawSocket() = default;
 
     //! @throw std::system_error
-    virtual void startSniffing(Net::InterfaceInfo const& interface) = 0;
+    virtual void startSniffing(Net::InterfaceInfo const& interface, bool promiscuous = false) = 0;
 
     void onReadAvailable() const;
 
