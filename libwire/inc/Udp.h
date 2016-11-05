@@ -21,9 +21,6 @@ class Udp {
     };
 
 public:
-    static constexpr int UnixId = IPPROTO_UDP;
-
-public:
     explicit Udp(data_t const& buffer);
     void debugDisplay();
     int16_t source() const { return _udpStruct.source; }

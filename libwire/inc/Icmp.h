@@ -14,9 +14,6 @@ namespace Net {
 class Icmp {
 
 public:
-    static constexpr int UnixId = IPPROTO_ICMP;
-
-public:
     Icmp() = default;
 private:
 };

@@ -35,9 +35,6 @@ class Tcp {
     };
 
 public:
-    static constexpr int UnixId = IPPROTO_TCP;
-
-public:
     Tcp(data_t const& buffer);
     ~Tcp() = default;
 

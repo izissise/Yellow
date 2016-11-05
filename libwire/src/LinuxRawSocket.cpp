@@ -3,14 +3,15 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netinet/in.h>
+#include <netinet/ether.h>
 
 namespace Net {
 
 uint8_t LinuxRawSocket::_sharedBuffer[LinuxRawSocket::buffSize];
 
-LinuxRawSocket::LinuxRawSocket(Net::Version version, Net::Protocol protocol, std::function<void (data_t const& data)> readCallback)
+LinuxRawSocket::LinuxRawSocket(std::function<void (data_t const& data)> readCallback)
 : ARawSocket(readCallback) {
-    _fd = socket(version, SOCK_RAW, protocol);
+    _fd = socket(PF_PACKET, SOCK_RAW, htons(ETHER_TYPE));
     if (_fd < 0) {
         throw lastSystemError();
     }
@@ -20,8 +21,9 @@ LinuxRawSocket::~LinuxRawSocket() {
     close(_fd);
 }
 
-void LinuxRawSocket::startSniffing(std::string const& interface) {
-    if (setsockopt(_fd, SOL_SOCKET, SO_BINDTODEVICE, interface.c_str(), static_cast<socklen_t>(interface.size())) < 0) {
+void LinuxRawSocket::startSniffing(Net::InterfaceInfo const& interface) {
+    auto iface = interface.getName().addr();
+    if (setsockopt(_fd, SOL_SOCKET, SO_BINDTODEVICE, iface.c_str(), static_cast<socklen_t>(iface.size())) < 0) {
         auto err = lastSystemError();
         close(_fd);
         throw err;

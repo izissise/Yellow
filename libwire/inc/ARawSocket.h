@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#include "NetInterfaceInfo.h"
 #include "Utils.h"
 
 namespace Net {
@@ -18,7 +19,7 @@ public:
     virtual ~ARawSocket() = default;
 
     //! @throw std::system_error
-    virtual void startSniffing(std::string const& interface) = 0;
+    virtual void startSniffing(Net::InterfaceInfo const& interface) = 0;
 
     void onReadAvailable() const;
 

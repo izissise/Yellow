@@ -3,8 +3,11 @@
 
 #include "ARawSocket.h"
 #include "RawData.h"
+#include "NetInterfaceInfo.h"
 
 #include "NetUtils.h"
+
+#define ETHER_TYPE	0x0800
 
 namespace Net {
 
@@ -12,11 +15,11 @@ class LinuxRawSocket : public ARawSocket {
     static constexpr size_t buffSize = 64 * 1024;
 
 public:
-    explicit LinuxRawSocket(Net::Version version, Net::Protocol protocol, std::function<void (data_t const& data)> readCallback);
+    explicit LinuxRawSocket(std::function<void (data_t const& data)> readCallback);
     virtual ~LinuxRawSocket();
 
     //! @throw std::system_error
-    void startSniffing(std::string const& interface) override;
+    void startSniffing(Net::InterfaceInfo const& interface) override;
 
     int getFd() const { return _fd; }
 
