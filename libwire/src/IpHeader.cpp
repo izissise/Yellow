@@ -4,47 +4,81 @@
 #include <cstring>
 
 #include <arpa/inet.h>
+#include <net/ethernet.h>
 
 namespace Net {
 
-IpHeader::IpHeader(data_t const& buffer) {
-    if (buffer.length() > sizeof(iphdr_t)) {
-      throw WrongSize("Error parsing ip header", sizeof(iphdr_t) - buffer.length(), sizeof(iphdr_t));
+template<>
+IpHeader<iphdr>::IpHeader(uint8_t* buffer, size_t buffsize) {
+    if (buffsize < sizeof(iphdr)) {
+        throw WrongSize("Error parsing ip header.", sizeof(iphdr) - buffsize, sizeof(iphdr));
     }
-    _ipHeader = *(reinterpret_cast<const iphdr_t*>(buffer.data()));
-    struct sockaddr_storage source, dest;
-    struct sockaddr_in* ipv4ptr;
-
-    std::memset(&source, 0, sizeof(source));
-    std::memset(&dest, 0, sizeof(dest));
-
-    ipv4ptr = reinterpret_cast<struct sockaddr_in*>(&source);
-    ipv4ptr->sin_addr.s_addr = _ipHeader.saddr;
-    ipv4ptr = reinterpret_cast<struct sockaddr_in*>(&dest);
-    ipv4ptr->sin_addr.s_addr = _ipHeader.daddr;
-
-    try {
-        _saddr = reinterpret_cast<struct sockaddr*>(&source);
-        _daddr = reinterpret_cast<struct sockaddr*>(&dest);
-    } catch (std::system_error& e) {
-        std::cerr << e.what() << std::endl;
+    _header = reinterpret_cast<iphdr*>(buffer);
+    // Read options field
+    size_t headerSize = headerSizeInBytes();
+    if (buffsize < headerSize) {
+        throw WrongSize("Error parsing ip header.", headerSize - buffsize, sizeof(iphdr));
     }
 }
 
-IpHeader::~IpHeader() {}
-bool IpHeader::operator==(const IpHeader& other) const { (void)other; return true; }
+template<>
+IpHeader<ip6_hdr>::IpHeader(uint8_t* buffer, size_t buffsize) {
+    if (buffsize < sizeof(ip6_hdr)) {
+        throw WrongSize("Error parsing ip header.", sizeof(ip6_hdr) - buffsize, sizeof(ip6_hdr));
+    }
+    _header = reinterpret_cast<ip6_hdr*>(buffer);
+}
 
-void IpHeader::debugDisplay() {
-    std::cout << "   |-IP Version          " << static_cast<unsigned int>(_ipHeader.version) << "\n"
-              << "   |-IP Header Length  : " << static_cast<unsigned int>(_ipHeader.ihl) << "\n"
-              << "   |-Type Of Service   : " << static_cast<unsigned int>(_ipHeader.tos) << "\n"
-              << "   |-IP Total Length   : " << static_cast<unsigned int>(_ipHeader.tot_len) << "\n"
-              << "   |-Identification    : " << static_cast<unsigned int>(_ipHeader.id) << "\n"
-              << "   |-TTL               : " << static_cast<unsigned int>(_ipHeader.ttl) << "\n"
-              << "   |-Protocol          : " << static_cast<unsigned int>(_ipHeader.protocol) << "\n"
-              << "   |-Checksum          : " << static_cast<unsigned int>(_ipHeader.check) << "\n"
-              << "   |-Source IP         : " << _saddr << "\n"
-              << "   |-Destination IP    : " << _daddr << std::endl;
+template<>
+Net::Version IpHeader<iphdr>::version() const {
+    return Version::V4;
+}
+
+template<>
+Net::Version IpHeader<ip6_hdr>::version() const {
+    return Version::V6;
+}
+
+template<>
+Net::NetAddr IpHeader<iphdr>::srcAddr() const {
+   return Net::NetAddr(_header->saddr);
+}
+
+template<>
+Net::NetAddr IpHeader<ip6_hdr>::srcAddr() const {
+    return Net::NetAddr(_header->ip6_src);
+}
+
+template<>
+Net::NetAddr IpHeader<iphdr>::dstAddr() const {
+    return Net::NetAddr(_header->daddr);
+}
+
+template<>
+Net::NetAddr IpHeader<ip6_hdr>::dstAddr() const {
+    return Net::NetAddr(_header->ip6_dst);
+}
+
+template<>
+size_t IpHeader<iphdr>::hopLimit() const {
+  return _header->ttl;
+}
+
+template<>
+size_t IpHeader<ip6_hdr>::hopLimit() const {
+    return _header->ip6_ctlun.ip6_un1.ip6_un1_hlim;
+}
+
+template class IpHeader<iphdr>;
+template class IpHeader<ip6_hdr>;
+
+Net::IIpHeader* ipHeaderPlacementNew(void* storage, Net::Version version, uint8_t* buffer, size_t buffsize) {
+    if (version == Version::V4) {
+        return new (storage) IpHeaderV4(buffer, buffsize);
+    } else if (version == Version::V6) {
+        return new (storage) IpHeaderV6(buffer, buffsize);
+    }
+    return new (storage) IpHeaderV4(buffer, buffsize);
 }
 
 }

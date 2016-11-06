@@ -14,6 +14,30 @@ NetAddr::NetAddr(std::string const& addr)
 : _addr(addr) {
 }
 
+NetAddr::NetAddr(const uint32_t& addr) {
+    struct sockaddr_storage source;
+    struct sockaddr_in* ipv4ptr;
+
+    std::memset(&source, 0, sizeof(source));
+
+    ipv4ptr = reinterpret_cast<struct sockaddr_in*>(&source);
+    ipv4ptr->sin_addr.s_addr = addr;
+    ipv4ptr->sin_family = AF_INET;
+    _addr = addrStr(reinterpret_cast<struct sockaddr const*>(&source));
+}
+
+NetAddr::NetAddr(const in6_addr& addr) {
+    struct sockaddr_storage source;
+    struct sockaddr_in6* ipv6ptr;
+
+    std::memset(&source, 0, sizeof(source));
+
+    ipv6ptr = reinterpret_cast<struct sockaddr_in6*>(&source);
+    ipv6ptr->sin6_addr = addr;
+    ipv6ptr->sin6_family = AF_INET6;
+    _addr = addrStr(reinterpret_cast<struct sockaddr const*>(&source));
+}
+
 NetAddr::NetAddr(struct sockaddr const* addr)
 : _addr(addrStr(addr)) {
 }

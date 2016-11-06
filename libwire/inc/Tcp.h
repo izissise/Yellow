@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <stdint.h>
+#include <netinet/in.h>
 #include <asm/types.h>
 #include <linux/posix_types.h>
 #include <asm/byteorder.h>
@@ -11,26 +12,28 @@
 
 namespace Net {
 
-struct tcphdr {
-    u_short	th_sport;		/* source port */
-    u_short	th_dport;		/* destination port */
-    u_long	th_seq;			/* sequence number */
-    u_long	th_ack;			/* acknowledgement number */
-#if BYTE_ORDER == LITTLE_ENDIAN
-    u_char	th_x2:4,		/* (unused) */
-    th_off:4;		/* data offset */
-#endif
-#if BYTE_ORDER == BIG_ENDIAN
-    u_char	th_off:4,		/* data offset */
-    th_x2:4;		/* (unused) */
-#endif
-    u_char	th_flags;
-    u_short	th_win;			/* window */
-    u_short	th_sum;			/* checksum */
-    u_short	th_urp;			/* urgent pointer */
-};
 
 class Tcp {
+
+    struct tcphdr {
+        u_short	th_sport;		/* source port */
+        u_short	th_dport;		/* destination port */
+        u_long	th_seq;			/* sequence number */
+        u_long	th_ack;			/* acknowledgement number */
+    #if BYTE_ORDER == LITTLE_ENDIAN
+        u_char	th_x2:4,		/* (unused) */
+        th_off:4;		/* data offset */
+    #endif
+    #if BYTE_ORDER == BIG_ENDIAN
+        u_char	th_off:4,		/* data offset */
+        th_x2:4;		/* (unused) */
+    #endif
+        u_char	th_flags;
+        u_short	th_win;			/* window */
+        u_short	th_sum;			/* checksum */
+        u_short	th_urp;			/* urgent pointer */
+    };
+
 public:
     Tcp(data_t const& buffer);
     ~Tcp() = default;

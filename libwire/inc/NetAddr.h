@@ -3,10 +3,13 @@
 
 #include <string>
 #include <stdexcept>
+#include <cstring>
 
 #include <sys/types.h>
 #include <ifaddrs.h>
 #include <arpa/inet.h>
+#include <netinet/ip.h>
+#include <netinet/ip6.h>
 
 namespace Net {
 
@@ -15,6 +18,11 @@ public:
     NetAddr();
 
     NetAddr(std::string const& addr);
+
+    //! @throw std::system_error
+    NetAddr(uint32_t const& addr);
+    //! @throw std::system_error
+    NetAddr(in6_addr const& addr);
 
     //! @throw std::system_error
     NetAddr(struct sockaddr const* addr);

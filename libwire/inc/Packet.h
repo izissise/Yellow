@@ -1,27 +1,25 @@
 #ifndef PACKET_H
 #define PACKET_H
 
-#include "IpHeader.h"
+#include <algorithm>
 
-#include "Utils.h"
+#include "IpHeader.h"
+#include "EthernetFrame.h"
+#include "PcapPacket.h"
+#include "NetUtils.h"
 
 namespace Net {
 
-  enum PacketType {
-    UDP,
-    TCP,
-    ICMP
-  };
-
-class Packet
-{
+class Packet : public PcapPacket {
 public:
-    Net::IpHeader ipHeader;
-    PacketType type;
     Packet(data_t const& buffer);
+    virtual ~Packet() = default;
+
+    EthernetFrame const& ethernetFrame() const { return _ethernetHeader; };
+    EthernetFrame& ethernetFrame() { return _ethernetHeader; };
 
 private:
-    void processPacket(data_t const& buffer);
+    EthernetFrame _ethernetHeader;
 };
 
 }

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <stdint.h>
+#include <netinet/in.h>
 #include <asm/types.h>
 #include <linux/posix_types.h>
 #include <asm/byteorder.h>
@@ -11,14 +12,13 @@
 
 namespace Net {
 
-struct udphdr {
-    int16_t source;
-    int16_t dest;
-    int16_t len;
-    int16_t check;
-};
-
 class Udp {
+    struct udphdr {
+        int16_t source;
+        int16_t dest;
+        int16_t len;
+        int16_t check;
+    };
 
 public:
     explicit Udp(data_t const& buffer);
