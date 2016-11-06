@@ -32,7 +32,7 @@ void LinuxRawSocket::startSniffing(Net::InterfaceInfo const& interface, bool pro
     ScopeGuard sg([this] () { close(_fd); });
 
     if (promiscuous) {
-        std::memcpy(ifopts.ifr_name, iface.c_str(), iface.size());
+        std::strncpy(ifopts.ifr_name, iface.c_str(), IFNAMSIZ - 1);
         if (ioctl(_fd, SIOCGIFFLAGS, &ifopts) < 0)
             throw lastSystemError();
         ifopts.ifr_flags |= IFF_PROMISC;
@@ -44,6 +44,7 @@ void LinuxRawSocket::startSniffing(Net::InterfaceInfo const& interface, bool pro
     if (setsockopt(_fd, SOL_SOCKET, SO_BINDTODEVICE, iface.c_str(), static_cast<socklen_t>(iface.size())) < 0) {
         throw lastSystemError();
     }
+    sg.deactivate();
 }
 
 data_t LinuxRawSocket::_readSock() const {
