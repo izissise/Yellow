@@ -3,28 +3,42 @@
 
 #include <string>
 #include <memory>
+#include <array>
 #include <exception>
 #include <system_error>
+#include <cstring>
 
 #include "RawData.h"
 
 std::system_error lastSystemError();
-std::string stringToHex(std::string const& s, bool uppercase = true);
+std::string stringToHex(std::string const& s, std::string separator, bool uppercase = true);
 
 //! Switch number endianess
 //! @param nb The number
 //! @return the switched number
 template<typename T>
-T switchEndianness(T nb) {
-    union
-    {
+T switchEndianness(T const& nb) {
+    union {
         T u;
-        unsigned char u8[sizeof(T)];
+        uint8_t u8[sizeof(T)];
     } source, dest;
     source.u = nb;
 
-    for (size_t k = 0; k < sizeof(T); k++)
+    for (size_t k = 0; k < sizeof(T); ++k)
         dest.u8[k] = source.u8[sizeof(T) - k - 1];
+    return dest.u;
+}
+
+template<typename T, size_t N>
+std::array<T, N> switchEndianness(const T (&nb)[N]) {
+    union {
+        std::array<T, N> u;
+        uint8_t u8[N];
+    } source, dest;
+    std::memcpy(source.u.data(), nb, N);
+
+    for (size_t k = 0; k < N; ++k)
+        dest.u8[k] = source.u8[N - k - 1];
     return dest.u;
 }
 

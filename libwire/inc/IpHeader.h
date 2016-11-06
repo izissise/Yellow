@@ -103,6 +103,10 @@ inline uint16_t IpHeader<ip6_hdr>::nextHeader() const {
 typedef IpHeader<iphdr> IpHeaderV4;
 typedef IpHeader<ip6_hdr> IpHeaderV6;
 
+constexpr size_t networkLayerStorageSize() {
+    return std::max(sizeof(IpHeaderV4), sizeof(IpHeaderV6));
+}
+
 //! @throw WrongSize
 Net::IIpHeader* ipHeaderPlacementNew(void* storage, Net::Version version, uint8_t* buffer, size_t buffsize);
 

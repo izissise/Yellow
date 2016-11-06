@@ -7,10 +7,9 @@
 namespace Net {
 
 Packet::Packet(data_t const& buffer)
-: Net::PcapPacket(buffer) {
-    processPacket(_packet);
+: Net::PcapPacket(buffer), _ethernetHeader(const_cast<uint8_t*>(_packet.data()), _packet.size()) {
 }
-
+/*
 void Packet::processPacket(data_t const& buffer) {
     _ipHeader = ipHeaderPlacementNew(_ipHeaderStore, Version::V4, const_cast<uint8_t*>(buffer.data()), buffer.size());
 
@@ -44,6 +43,6 @@ void Packet::processPacket(data_t const& buffer) {
 //     default:
 //         break;
 //     }
-}
+}*/
 
 }
