@@ -32,6 +32,9 @@ public:
 
     ~PcapPacket() = default;
 
+    void setPacket(data_t const& data);
+    void setDate(std::chrono::time_point<std::chrono::high_resolution_clock> const& date = std::chrono::high_resolution_clock::now());
+
     std::chrono::time_point<std::chrono::high_resolution_clock> date() const;
 
     data_t const& packet() const { return _packet; };

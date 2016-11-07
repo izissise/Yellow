@@ -15,6 +15,9 @@ public:
     Packet(data_t const& buffer);
     virtual ~Packet() = default;
 
+    Packet(Packet const& o);
+    Packet& operator=(Packet const& o) = delete;
+
     EthernetFrame const& ethernetFrame() const { return _ethernetHeader; };
     EthernetFrame& ethernetFrame() { return _ethernetHeader; };
 

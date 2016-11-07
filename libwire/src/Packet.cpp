@@ -9,6 +9,20 @@ namespace Net {
 Packet::Packet(data_t const& buffer)
 : Net::PcapPacket(buffer), _ethernetHeader(const_cast<uint8_t*>(_packet.data()), _packet.size()) {
 }
+
+Packet::Packet(Packet const& o)
+: Net::PcapPacket(o.packet()), _ethernetHeader(const_cast<uint8_t*>(_packet.data()), _packet.size()) {
+}
+
+// Packet& Packet::operator=(Packet const& o) {
+//     setPacket(o.packet());
+//     setDate();
+//     EthernetFrame frame(const_cast<uint8_t*>(_packet.data()), _packet.size());
+// //     std::move(_ethernetHeader, frame);
+//     return *this;
+// }
+
+
 /*
 void Packet::processPacket(data_t const& buffer) {
     _ipHeader = ipHeaderPlacementNew(_ipHeaderStore, Version::V4, const_cast<uint8_t*>(buffer.data()), buffer.size());

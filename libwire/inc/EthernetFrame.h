@@ -17,6 +17,9 @@ public:
     EthernetFrame(uint8_t* buffer, size_t buffsize);
     virtual ~EthernetFrame();
 
+    EthernetFrame(EthernetFrame const& o) = delete;
+    EthernetFrame& operator=(EthernetFrame const& o) = delete;
+
     std::string srcAddr() const;
     std::string dstAddr() const;
 
@@ -30,11 +33,11 @@ protected:
 
 // Sub protocol
 protected:
-    Net::IIpHeader* _ipHeader = nullptr; // Will be in ethernet header
+    Net::IIpHeader* _ipHeader = nullptr;
 
     // Class Objects storage
 private:
-    uint8_t _ipHeaderStore[networkLayerStorageSize()];
+    std::aligned_storage<networkLayerStorageSize(), networkLayerAlignSize()>::type _ipHeaderStore;
 };
 
 }

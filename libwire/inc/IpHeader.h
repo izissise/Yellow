@@ -36,6 +36,9 @@ public:
     IpHeader(uint8_t* buffer, size_t buffsize);
     virtual ~IpHeader() = default;
 
+    IpHeader(IpHeader const& o) = delete;
+    IpHeader& operator=(IpHeader const& o) = delete;
+
     Net::Version version() const override;
 
     Net::NetAddr srcAddr() const override;
@@ -64,7 +67,7 @@ private:
 
 // IPv4
 template<> template<>
-inline size_t IpHeader<iphdr>::headerSizeInBytes() const { return ntohs(_header->ihl) * 4; }
+inline size_t IpHeader<iphdr>::headerSizeInBytes() const { return (_header->ihl) * 4; }
 
 template<> template<>
 inline int8_t IpHeader<iphdr>::tos() const { return _header->tos; }
@@ -107,8 +110,20 @@ constexpr size_t networkLayerStorageSize() {
     return std::max(sizeof(IpHeaderV4), sizeof(IpHeaderV6));
 }
 
+constexpr size_t networkLayerAlignSize() {
+    return std::min(alignof(IpHeaderV4), alignof(IpHeaderV6));
+}
+
 //! @throw WrongSize
-Net::IIpHeader* ipHeaderPlacementNew(void* storage, Net::Version version, uint8_t* buffer, size_t buffsize);
+template<typename StorageType>
+Net::IIpHeader* ipHeaderPlacementNew(StorageType storage, Net::Version version, uint8_t* buffer, size_t buffsize) {
+    if (version == Version::V4) {
+        return new (storage) IpHeaderV4(buffer, buffsize);
+    } else if (version == Version::V6) {
+        return new (storage) IpHeaderV6(buffer, buffsize);
+    }
+    return new (storage) IpHeaderV4(buffer, buffsize);
+}
 
 }
 

@@ -4,12 +4,24 @@ namespace Net {
 
 PcapPacket::PcapPacket(data_t const& data, std::chrono::time_point<std::chrono::high_resolution_clock> const& date)
 : _packet(data) {
+    _header.incl_len = static_cast<uint32_t>(_packet.size());
+    _header.orig_len = _header.incl_len;
+
+    setDate(date);
+}
+
+void PcapPacket::setPacket(const data_t& data){
+    _packet = data;
+
+    _header.incl_len = static_cast<uint32_t>(data.size());
+    _header.orig_len = _header.incl_len;
+}
+
+void PcapPacket::setDate(std::chrono::time_point<std::chrono::high_resolution_clock> const& date) {
     auto durationFromEpoch = std::chrono::duration_cast<std::chrono::microseconds>(date.time_since_epoch());
     auto dSec = std::chrono::duration_cast<std::chrono::seconds>(durationFromEpoch);
     auto dMs = std::chrono::duration_cast<std::chrono::microseconds>(durationFromEpoch - dSec);
 
-    _header.incl_len = static_cast<uint32_t>(data.size());
-    _header.orig_len = _header.incl_len;
     _header.ts_sec =  static_cast<uint32_t>(dSec.count());
     _header.ts_usec = static_cast<uint32_t>(dMs.count());
 }

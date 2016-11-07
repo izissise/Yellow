@@ -28,7 +28,7 @@ LinuxRawSocket::~LinuxRawSocket() {
 void LinuxRawSocket::startSniffing(Net::InterfaceInfo const& interface, bool promiscuous) {
     auto iface = interface.getName().addr();
     ifreq ifopts;
-    int sockopt;
+    int sockopt = 0;
     ScopeGuard sg([this] () { close(_fd); });
 
     if (promiscuous) {

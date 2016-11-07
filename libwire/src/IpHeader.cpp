@@ -17,7 +17,7 @@ IpHeader<iphdr>::IpHeader(uint8_t* buffer, size_t buffsize) {
     // Read options field
     size_t headerSize = headerSizeInBytes();
     if (buffsize < headerSize) {
-        throw WrongSize("Error parsing ip header.", headerSize - buffsize, sizeof(iphdr));
+        throw WrongSize("Error parsing ip header.", headerSize - buffsize, headerSize);
     }
 }
 
@@ -71,14 +71,5 @@ size_t IpHeader<ip6_hdr>::hopLimit() const {
 
 template class IpHeader<iphdr>;
 template class IpHeader<ip6_hdr>;
-
-Net::IIpHeader* ipHeaderPlacementNew(void* storage, Net::Version version, uint8_t* buffer, size_t buffsize) {
-    if (version == Version::V4) {
-        return new (storage) IpHeaderV4(buffer, buffsize);
-    } else if (version == Version::V6) {
-        return new (storage) IpHeaderV6(buffer, buffsize);
-    }
-    return new (storage) IpHeaderV4(buffer, buffsize);
-}
 
 }
