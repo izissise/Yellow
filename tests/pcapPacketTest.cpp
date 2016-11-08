@@ -10,7 +10,7 @@ TEST_CASE("Pcap pcackets tests", "[net][pcap][date]") {
 
     SECTION("Data should be the ones provided") {
         uint8_t d[] = "\x85\x65\x57\xb5";
-        data_t data(d, sizeof(d) - 1);
+        data_t data = subData(d, sizeof(d) - 1);
         Net::PcapPacket packet(data);
         CHECK(packet.packet() == data);
         CHECK(packet.size() == (sizeof(d) - 1));
@@ -19,7 +19,7 @@ TEST_CASE("Pcap pcackets tests", "[net][pcap][date]") {
 
     SECTION("Date should be the one provided") {
         uint8_t d[] = "\x85\x65\x57\xb5";
-        data_t data(d, sizeof(d) - 1);
+        data_t data = subData(d, sizeof(d) - 1);
         std::chrono::time_point<std::chrono::high_resolution_clock> now = std::chrono::high_resolution_clock::now();
         Net::PcapPacket packet(data, now);
         CHECK(packet.date() == std::chrono::time_point_cast<std::chrono::microseconds>(now));
@@ -28,13 +28,14 @@ TEST_CASE("Pcap pcackets tests", "[net][pcap][date]") {
     SECTION("Raw data should match") {
         uint8_t d[] = "\x85\x35\x57\xb5";
         uint8_t header[] = "\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00";
-        data_t data(d, sizeof(d) - 1);
+        data_t data = subData(d, sizeof(d) - 1);
         auto date = std::chrono::system_clock::from_time_t(0);
         Net::PcapPacket packet(data, date);
 
-        data_t raw = data_t(header, sizeof(header) - 1) + data;
+        data_t raw = subData(header, sizeof(header) - 1);
+        raw.insert(raw.end(), data.begin(), data.end());
         CHECK(packet.date() == date);
-        CHECK(packet.getRawData() == raw);
+        CHECK(packet.getRawHeaderAndData() == raw);
     }
 
     SECTION("Should throw when header is not the right size") {
@@ -49,8 +50,9 @@ TEST_CASE("Pcap pcackets tests", "[net][pcap][date]") {
         std::stringstream ss;
         uint8_t d[] = "\x85\x35\x57";
         uint8_t header[] = "\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00";
-        data_t data(d, sizeof(d) - 1);
-        data_t raw = data_t(header, sizeof(header) - 1) + data;
+        data_t data = subData(d, sizeof(d) - 1);
+        data_t raw = subData(header, sizeof(header) - 1);
+        raw.insert(raw.end(), data.begin(), data.end());
         ss.write(reinterpret_cast<const char*>(raw.data()), raw.size());
         REQUIRE_THROWS_AS(Net::PcapPacket(ss, false, 2000), WrongSize);
     }

@@ -42,7 +42,7 @@ public:
     bool isIncomplete() const { return _header.incl_len != _header.orig_len; };
     uint32_t size() const { return _header.incl_len; };
 
-    data_t getRawData() const;
+    data_t getRawHeaderAndData() const;
 protected:
     pcaprec_hdr_t _header;
     data_t _packet;
@@ -65,11 +65,12 @@ PcapPacket::PcapPacket(STREAM& stream, bool swap, size_t maxLength) {
        std::cerr << "Warning length of packet is larger than max length, continuing anyways." << std::endl;
     }
 
-    auto buff = std::make_unique<char[]>(_header.incl_len);
-    if ((n = stream.read(buff.get(), _header.incl_len).gcount()) < _header.incl_len) {
+    data_t tmpPacket;
+    tmpPacket.resize(_header.incl_len);
+    if ((n = stream.read(reinterpret_cast<char*>(tmpPacket.data()), _header.incl_len).gcount()) < _header.incl_len) {
         throw WrongSize("Error parsing packet data.", _header.incl_len - n, _header.incl_len);
     }
-    _packet = std::move(data_t(reinterpret_cast<uint8_t*>(buff.get()), _header.incl_len));
+    _packet = std::move(tmpPacket);
 }
 
 }

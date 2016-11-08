@@ -32,8 +32,10 @@ std::chrono::time_point<std::chrono::high_resolution_clock> PcapPacket::date() c
     return ret;
 }
 
-data_t PcapPacket::getRawData() const {
-    return data_t(reinterpret_cast<const uint8_t*>(&_header), sizeof(_header)) + _packet;
+data_t PcapPacket::getRawHeaderAndData() const {
+    data_t ret(reinterpret_cast<const uint8_t*>(&_header), &((reinterpret_cast<const uint8_t*>(&_header))[sizeof(_header)]));
+    ret.insert(std::end(ret), std::begin(_packet), std::end(_packet));
+    return ret;
 }
 
 }

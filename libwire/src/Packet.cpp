@@ -7,11 +7,11 @@
 namespace Net {
 
 Packet::Packet(data_t const& buffer)
-: Net::PcapPacket(buffer), _ethernetHeader(const_cast<uint8_t*>(_packet.data()), _packet.size()) {
+: Net::PcapPacket(buffer), _ethernetHeader(_packet.data(), _packet.size()) {
 }
 
 Packet::Packet(Packet const& o)
-: Net::PcapPacket(o.packet()), _ethernetHeader(const_cast<uint8_t*>(_packet.data()), _packet.size()) {
+: Net::PcapPacket(o.packet()), _ethernetHeader(_packet.data(), _packet.size()) {
 }
 
 // Packet& Packet::operator=(Packet const& o) {

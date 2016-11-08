@@ -13,6 +13,7 @@ namespace Net {
 
 class LinuxRawSocket : public ARawSocket {
     static constexpr size_t buffSize = 64 * 1024;
+    static data_t _sharedBuffer;
 
 public:
     explicit LinuxRawSocket(std::function<void (data_t const& data)> readCallback);
@@ -27,7 +28,6 @@ protected:
     data_t _readSock() const override;
 
 private:
-    static uint8_t _sharedBuffer[buffSize];
     int _fd;
 };
 

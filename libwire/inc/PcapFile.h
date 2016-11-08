@@ -121,7 +121,7 @@ void PcapFile::saveFile(std::string const& filePath) const {
 
     file.write(reinterpret_cast<const char*>(&_header), sizeof(_header));
     for (auto const& packet : _packets) {
-        auto d = packet.getRawData();
+        auto d = packet.getRawHeaderAndData();
         file.write(reinterpret_cast<const char*>(d.data()), d.size());
     }
 }

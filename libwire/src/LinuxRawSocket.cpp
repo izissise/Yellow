@@ -11,10 +11,11 @@
 
 namespace Net {
 
-uint8_t LinuxRawSocket::_sharedBuffer[LinuxRawSocket::buffSize];
+data_t LinuxRawSocket::_sharedBuffer;
 
 LinuxRawSocket::LinuxRawSocket(std::function<void (data_t const& data)> readCallback)
 : ARawSocket(readCallback) {
+    _sharedBuffer.resize(buffSize);
     _fd = socket(PF_PACKET, SOCK_RAW, htons(ETHER_TYPE));
     if (_fd < 0) {
         throw lastSystemError();
@@ -51,11 +52,11 @@ data_t LinuxRawSocket::_readSock() const {
    sockaddr_storage saddr;
    socklen_t saddrSize = sizeof(saddr);
 
-   ssize_t dataSize = recvfrom(_fd, _sharedBuffer, sizeof(_sharedBuffer), 0, reinterpret_cast<sockaddr*>(&saddr), &saddrSize);
+   ssize_t dataSize = recvfrom(_fd, _sharedBuffer.data(), sizeof(_sharedBuffer), 0, reinterpret_cast<sockaddr*>(&saddr), &saddrSize);
    if (dataSize < 0) {
        throw lastSystemError();
    }
-   return data_t(_sharedBuffer, dataSize);
+   return subData(_sharedBuffer, dataSize);
 }
 
 }
