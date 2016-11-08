@@ -49,11 +49,9 @@ void LinuxRawSocket::startSniffing(Net::InterfaceInfo const& interface, bool pro
 }
 
 data_t LinuxRawSocket::_readSock() const {
-   sockaddr_storage saddr;
-   socklen_t saddrSize = sizeof(saddr);
 
-   ssize_t dataSize = recvfrom(_fd, _sharedBuffer.data(), sizeof(_sharedBuffer), 0, reinterpret_cast<sockaddr*>(&saddr), &saddrSize);
-   if (dataSize < 0) {
+   ssize_t dataSize = recvfrom(_fd, _sharedBuffer.data(), _sharedBuffer.size(), 0, nullptr, nullptr);
+   if (dataSize < 0 && errno != EINTR) {
        throw lastSystemError();
    }
    return subData(_sharedBuffer, dataSize);

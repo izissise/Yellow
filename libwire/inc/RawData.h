@@ -11,7 +11,7 @@ typedef std::vector<uint8_t> data_t;
 template<typename Store>
 data_t subData(Store const& d, size_t s) {
     auto start = std::begin(d);
-    auto end = std::next(start, s + 1);
+    auto end = std::next(start, s);
     return data_t(start, end);
 }
 

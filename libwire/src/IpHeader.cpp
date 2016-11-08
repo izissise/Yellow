@@ -11,20 +11,20 @@ namespace Net {
 template<>
 IpHeader<iphdr>::IpHeader(uint8_t* buffer, size_t buffsize) {
     if (buffsize < sizeof(iphdr)) {
-        throw WrongSize("Error parsing ip header.", sizeof(iphdr) - buffsize, sizeof(iphdr));
+        throw WrongSize("Error parsing ipv4 header.", sizeof(iphdr) - buffsize, sizeof(iphdr));
     }
     _header = reinterpret_cast<iphdr*>(buffer);
     // Read options field
     size_t headerSize = headerSizeInBytes();
     if (buffsize < headerSize) {
-        throw WrongSize("Error parsing ip header.", headerSize - buffsize, headerSize);
+        throw WrongSize("Error parsing ipv4 header.", headerSize - buffsize, headerSize);
     }
 }
 
 template<>
 IpHeader<ip6_hdr>::IpHeader(uint8_t* buffer, size_t buffsize) {
     if (buffsize < sizeof(ip6_hdr)) {
-        throw WrongSize("Error parsing ip header.", sizeof(ip6_hdr) - buffsize, sizeof(ip6_hdr));
+        throw WrongSize("Error parsing ipv6 header.", sizeof(ip6_hdr) - buffsize, sizeof(ip6_hdr));
     }
     _header = reinterpret_cast<ip6_hdr*>(buffer);
 }
