@@ -12,6 +12,8 @@
 #include <linux/posix_types.h>
 #include <asm/byteorder.h>
 
+#include "Placement_ptr.h"
+
 #include "NetUtils.h"
 #include "Utils.h"
 
@@ -125,14 +127,13 @@ constexpr size_t networkLayerAlignSize() {
 }
 
 //! @throw WrongSize
-template<typename StorageType>
-Net::IIpHeader* ipHeaderPlacementNew(StorageType storage, Net::Version version, uint8_t* buffer, size_t buffsize) {
+inline placement_ptr<Net::IIpHeader, networkLayerStorageSize(), networkLayerAlignSize()> networkLayerCreate(Net::Version version, uint8_t* buffer, size_t buffsize) {
     if (version == Version::V4) {
-        return new (storage) IpHeaderV4(buffer, buffsize);
+        return placement_ptr<Net::IpHeaderV4, networkLayerStorageSize(), networkLayerAlignSize()>(buffer, buffsize);
     } else if (version == Version::V6) {
-        return new (storage) IpHeaderV6(buffer, buffsize);
+        return placement_ptr<Net::IpHeaderV6, networkLayerStorageSize(), networkLayerAlignSize()>(buffer, buffsize);
     }
-    return new (storage) IpHeaderV4(buffer, buffsize);
+    return placement_ptr<Net::IpHeaderV4, networkLayerStorageSize(), networkLayerAlignSize()>(buffer, buffsize);
 }
 
 }

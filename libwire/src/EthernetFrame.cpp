@@ -17,21 +17,14 @@ EthernetFrame::EthernetFrame(uint8_t* buffer, size_t buffsize) {
 
     switch(type()) {
         case ETHERTYPE_IP:
-            _ipHeader = ipHeaderPlacementNew(&_ipHeaderStore, Version::V4, buffer, buffsize);
+            _ipHeader.reset(networkLayerCreate(Version::V4, buffer, buffsize));
         break;
         case ETHERTYPE_IPV6:
-            _ipHeader = ipHeaderPlacementNew(&_ipHeaderStore, Version::V6, buffer, buffsize);
+            _ipHeader.reset(networkLayerCreate(Version::V6, buffer, buffsize));
         break;
         default:
-            _ipHeader = ipHeaderPlacementNew(&_ipHeaderStore, Version::V4, buffer, buffsize);
+            _ipHeader.reset(networkLayerCreate(Version::V4, buffer, buffsize));
         break;
-    }
-}
-
-EthernetFrame::~EthernetFrame() {
-    if (_ipHeader != nullptr) {
-       _ipHeader->~IIpHeader();
-       _ipHeader = nullptr;
     }
 }
 
