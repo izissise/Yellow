@@ -47,18 +47,28 @@ public:
     size_t hopLimit() const override;
 
     // IPv4 Specific
-    template<typename T = HeaderStruct> typename std::enable_if<std::is_same<T, iphdr>::value, size_t>::type headerSizeInBytes() const;
-    template<typename T = HeaderStruct> typename std::enable_if<std::is_same<T, iphdr>::value, int8_t>::type tos() const;
-    template<typename T = HeaderStruct> typename std::enable_if<std::is_same<T, iphdr>::value, int16_t>::type tot_len() const;
-    template<typename T = HeaderStruct> typename std::enable_if<std::is_same<T, iphdr>::value, int16_t>::type id() const;
-    template<typename T = HeaderStruct> typename std::enable_if<std::is_same<T, iphdr>::value, int16_t>::type frag_off() const;
-    template<typename T = HeaderStruct> typename std::enable_if<std::is_same<T, iphdr>::value, int8_t>::type protocol() const;
-    template<typename T = HeaderStruct> typename std::enable_if<std::is_same<T, iphdr>::value, int16_t>::type check() const;
+    template<typename T = HeaderStruct, typename std::enable_if<std::is_same<T, iphdr>::value, int>::type = 0>
+    size_t headerSizeInBytes() const;
+    template<typename T = HeaderStruct, typename std::enable_if<std::is_same<T, iphdr>::value, int>::type = 0>
+    int8_t tos() const;
+    template<typename T = HeaderStruct, typename std::enable_if<std::is_same<T, iphdr>::value, int>::type = 0>
+    int16_t tot_len() const;
+    template<typename T = HeaderStruct, typename std::enable_if<std::is_same<T, iphdr>::value, int>::type = 0>
+    int16_t id() const;
+    template<typename T = HeaderStruct, typename std::enable_if<std::is_same<T, iphdr>::value, int>::type = 0>
+    int16_t frag_off() const;
+    template<typename T = HeaderStruct, typename std::enable_if<std::is_same<T, iphdr>::value, int>::type = 0>
+    int8_t protocol() const;
+    template<typename T = HeaderStruct, typename std::enable_if<std::is_same<T, iphdr>::value, int>::type = 0>
+    int16_t check() const;
 
     // IPv6 Specific
-    template<typename T = HeaderStruct> typename std::enable_if<std::is_same<T, ip6_hdr>::value, uint32_t>::type flow() const;
-    template<typename T = HeaderStruct> typename std::enable_if<std::is_same<T, ip6_hdr>::value, uint16_t>::type payloadLength() const;
-    template<typename T = HeaderStruct> typename std::enable_if<std::is_same<T, ip6_hdr>::value, uint16_t>::type nextHeader() const;
+    template<typename T = HeaderStruct, typename std::enable_if<std::is_same<T, ip6_hdr>::value, int>::type = 0>
+    uint32_t flow() const;
+    template<typename T = HeaderStruct, typename std::enable_if<std::is_same<T, ip6_hdr>::value, int>::type = 0>
+    uint16_t payloadLength() const;
+    template<typename T = HeaderStruct, typename std::enable_if<std::is_same<T, ip6_hdr>::value, int>::type = 0>
+    uint16_t nextHeader() const;
 
 
 private:
