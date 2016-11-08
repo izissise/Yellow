@@ -25,10 +25,17 @@ public:
     std::string srcAddr() const;
     std::string dstAddr() const;
 
+    void srcAddr(std::string const& mac);
+    void dstAddr(std::string const& mac);
+
     uint16_t type() const { return switchEndianness(_header->ether_type); }
+    void type(uint16_t type) { _header->ether_type = switchEndianness(type); };
 
     const Net::IIpHeader* getNetworkLayer() const { return _ipHeader.get(); }
     Net::IIpHeader* getNetworkLayer(){ return _ipHeader.get(); }
+
+private:
+    void setMacAddr(unsigned char* buff, std::string const& mac);
 
 protected:
     ether_header* _header;

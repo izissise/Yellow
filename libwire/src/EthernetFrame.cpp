@@ -40,4 +40,21 @@ std::string EthernetFrame::dstAddr() const {
     return stringToHex(std::string(std::begin(addr), std::end(addr)), ":", true);
 }
 
+void EthernetFrame::srcAddr(std::string const& mac) {
+   setMacAddr(_header->ether_shost, mac);
+}
+
+void EthernetFrame::dstAddr(std::string const& mac) {
+   setMacAddr(_header->ether_dhost, mac);
+}
+
+void EthernetFrame::setMacAddr(unsigned char* buff, std::string const& mac) {
+    if (std::sscanf(mac.c_str(),
+        "%02s:%02s:%02s:%02s:%02s:%02s",
+        &buff[0], &buff[1], &buff[2],
+        &buff[3], &buff[4], &buff[5]) != 6) {
+        throw std::runtime_error(mac + std::string(" is an invalid MAC address"));
+    }
+}
+
 }
