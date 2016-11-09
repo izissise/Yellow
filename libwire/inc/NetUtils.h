@@ -12,16 +12,17 @@
 
 namespace Net {
 
-enum Version {
+enum class Version {
     V4,
     V6,
     UNKNOWN
 };
 
-enum Protocol {
+enum class Transport {
     TCP,
     UDP,
-    ICMP
+    ICMP,
+    UNKNOWN
 };
 
 //! @throw std::system_error

@@ -4,15 +4,16 @@
 
 namespace Net {
 
-Udp::Udp(data_t const& buffer)
-: _udpStruct(*(reinterpret_cast<struct udphdr const*>(buffer.data()))) {
-}
-void Udp::debugDisplay() {
-    std::cout << "UDP Header" << std::endl;
-    std::cout << "   |-Source Port      : " << ntohs(_udpStruct.source) << std::endl;
-    std::cout << "   |-Destination Port : " << ntohs(_udpStruct.dest) << std::endl;
-    std::cout << "   |-UDP Length       : " << ntohs(_udpStruct.len) << std::endl;
-    std::cout << "   |-UDP Checksum     : " << ntohs(_udpStruct.check) << std::endl;
+Udp::Udp(uint8_t* buffer, size_t buffsize)
+: ATransport(buffer, buffsize) {
+    if (buffsize < sizeof(udphdr)) {
+        throw WrongSize("Error parsing udp header.", sizeof(udphdr) - buffsize, sizeof(udphdr));
+    }
+    _udpHeader = reinterpret_cast<udphdr*>(buffer);
+    buffer = &(buffer[sizeof(udphdr)]);
+    buffsize -= sizeof(udphdr);
+    _data = buffer;
+    _dataSize = buffsize;
 }
 
 }

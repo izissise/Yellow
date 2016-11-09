@@ -4,32 +4,37 @@
 #include <iostream>
 #include <stdint.h>
 #include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/udp.h>
 #include <asm/types.h>
 #include <linux/posix_types.h>
 #include <asm/byteorder.h>
 
-#include "Utils.h"
+#include "ATransport.h"
 
 namespace Net {
 
-class Udp {
-    struct udphdr {
-        int16_t source;
-        int16_t dest;
-        int16_t len;
-        int16_t check;
-    };
-
+class Udp : public ATransport {
 public:
-    explicit Udp(data_t const& buffer);
-    void debugDisplay();
-    int16_t source() const { return _udpStruct.source; }
-    int16_t dest() const { return _udpStruct.dest; }
-    int16_t len() const { return _udpStruct.len; }
-    int16_t check() const { return _udpStruct.check; }
+    Udp(uint8_t* buffer, size_t buffsize);
+    virtual ~Udp() = default;
+
+    Net::Transport type() const override { return Net::Transport::UDP; }
+
+    uint16_t srcPort() const { return ntohs(_udpHeader->uh_sport); }
+    void     srcPort(uint16_t sport) { _udpHeader->uh_sport = htons(sport); }
+
+    uint16_t dstPort() const { return ntohs(_udpHeader->uh_dport); }
+    void     dstPort(uint16_t dport) { _udpHeader->uh_dport = htons(dport); }
+
+    uint16_t dataSize() const { return  ntohs(_udpHeader->uh_ulen); };
+    void     dataSize(uint16_t dSize) { _udpHeader->uh_ulen = htons(dSize); }
+
+    uint16_t checksum() const { return  ntohs(_udpHeader->uh_sum); };
+    void     checksum(uint16_t sum) { _udpHeader->uh_sum = htons(sum); }
 
 private:
-    struct udphdr _udpStruct;
+    udphdr* _udpHeader;
 };
 
 }

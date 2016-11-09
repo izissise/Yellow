@@ -4,18 +4,16 @@
 
 namespace Net {
 
-Tcp::Tcp(data_t const& buffer)
-: _tcpStruct(*(reinterpret_cast<struct tcphdr const*>(buffer.data()))) {
-}
-
-void Tcp::debugDisplay() {
-    std::cout << "TCP Header" << "\n"
-              << "   |-Source Port        : " << ntohs(_tcpStruct.th_sport) << "\n"
-              << "   |-Destination Port   : " << ntohs(_tcpStruct.th_dport) << "\n"
-              << "   |-Sequence number    : " << ntohs(_tcpStruct.th_seq) << "\n"
-              << "   |-Acknowledge Number : " << ntohs(_tcpStruct.th_ack) << "\n"
-              << "   |-Header Length      : " << ntohs(_tcpStruct.th_off) << "\n"
-              << "   |-Flags              : " << ntohs(_tcpStruct.th_flags) << std::endl;
+Tcp::Tcp(uint8_t* buffer, size_t buffsize)
+: ATransport(buffer, buffsize) {
+    if (buffsize < sizeof(tcphdr)) {
+        throw WrongSize("Error parsing tcp header.", sizeof(tcphdr) - buffsize, sizeof(tcphdr));
+    }
+    _tcpHeader = reinterpret_cast<tcphdr*>(buffer);
+    buffer = &(buffer[sizeof(tcphdr)]);
+    buffsize -= sizeof(tcphdr);
+    _data = buffer;
+    _dataSize = buffsize;
 }
 
 }

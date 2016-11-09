@@ -1,56 +1,41 @@
 #ifndef TCP_H
 #define TCP_H
 
-#include <iostream>
 #include <stdint.h>
 #include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
 #include <asm/types.h>
 #include <linux/posix_types.h>
 #include <asm/byteorder.h>
 
-#include "Utils.h"
+#include "ATransport.h"
 
 namespace Net {
 
-
-class Tcp {
-
-    struct tcphdr {
-        u_short	th_sport;		/* source port */
-        u_short	th_dport;		/* destination port */
-        u_long	th_seq;			/* sequence number */
-        u_long	th_ack;			/* acknowledgement number */
-    #if BYTE_ORDER == LITTLE_ENDIAN
-        u_char	th_x2:4,		/* (unused) */
-        th_off:4;		/* data offset */
-    #endif
-    #if BYTE_ORDER == BIG_ENDIAN
-        u_char	th_off:4,		/* data offset */
-        th_x2:4;		/* (unused) */
-    #endif
-        u_char	th_flags;
-        u_short	th_win;			/* window */
-        u_short	th_sum;			/* checksum */
-        u_short	th_urp;			/* urgent pointer */
-    };
-
+class Tcp : public ATransport {
 public:
-    Tcp(data_t const& buffer);
-    ~Tcp() = default;
+    Tcp(uint8_t* buffer, size_t buffsize);
+    virtual ~Tcp() = default;
 
-    void debugDisplay();
-    u_short th_sport() const { return _tcpStruct.th_sport; }
-    u_short th_dport() const { return _tcpStruct.th_dport; }
-    u_long th_seq() const { return _tcpStruct.th_seq; }
-    u_long th_ack() const { return _tcpStruct.th_ack; }
-    u_char th_off() const { return _tcpStruct.th_off; }
-    u_char th_flags() const { return _tcpStruct.th_flags; }
-    u_short th_win() const { return _tcpStruct.th_win; }
-    u_short th_sum() const { return _tcpStruct.th_sum; }
-    u_short th_urp() const { return _tcpStruct.th_urp; }
+    Net::Transport type() const override { return Net::Transport::TCP; }
+
+    uint16_t srcPort() const { return ntohs(_tcpHeader->th_sport); }
+    void     srcPort(uint16_t sport) { _tcpHeader->th_sport = htons(sport); }
+
+    uint16_t dstPort() const { return ntohs(_tcpHeader->th_dport); }
+    void     dstPort(uint16_t dport) { _tcpHeader->th_dport = htons(dport); }
+
+    uint32_t seq() const { return ntohl(_tcpHeader->th_seq); }
+    uint32_t ack() const { return ntohl(_tcpHeader->th_ack); }
+    uint8_t offset() const { return _tcpHeader->th_off; }
+    uint8_t flags() const { return _tcpHeader->th_flags; }
+    uint16_t window() const { return ntohs(_tcpHeader->th_win); }
+    uint16_t sum() const { return ntohs(_tcpHeader->th_sum); }
+    uint16_t urg() const { return ntohs(_tcpHeader->th_urp); }
 
 private:
-    struct tcphdr _tcpStruct;
+    tcphdr* _tcpHeader;
 };
 
 }
