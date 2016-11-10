@@ -9,24 +9,25 @@
 namespace Net {
 
 template<>
-IpHeader<iphdr>::IpHeader(uint8_t* buffer, size_t buffsize) {
-    if (buffsize < sizeof(iphdr)) {
-        throw WrongSize("Error parsing ipv4 header.", sizeof(iphdr) - buffsize, sizeof(iphdr));
+IpHeader<iphdr>::IpHeader(data_slice_t const& slice) {
+    if (slice.size() < HeaderSize) {
+        throw WrongSize("Error parsing ipv4 header.", HeaderSize - slice.size(), HeaderSize);
     }
-    _header = reinterpret_cast<iphdr*>(buffer);
+    _header = reinterpret_cast<iphdr*>(slice.ptr());
+
     // Read options field
-    size_t headerSize = headerSizeInBytes();
-    if (buffsize < headerSize) {
-        throw WrongSize("Error parsing ipv4 header.", headerSize - buffsize, headerSize);
+    size_t headerAdOptionsSize = headerSizeInBytes();
+    if (slice.size() < headerAdOptionsSize) {
+        throw WrongSize("Error parsing ipv4 header.", headerAdOptionsSize - slice.size(), headerAdOptionsSize);
     }
 }
 
 template<>
-IpHeader<ip6_hdr>::IpHeader(uint8_t* buffer, size_t buffsize) {
-    if (buffsize < sizeof(ip6_hdr)) {
-        throw WrongSize("Error parsing ipv6 header.", sizeof(ip6_hdr) - buffsize, sizeof(ip6_hdr));
+IpHeader<ip6_hdr>::IpHeader(data_slice_t const& slice) {
+    if (slice.size() < HeaderSize) {
+        throw WrongSize("Error parsing ipv6 header.", HeaderSize - slice.size(), HeaderSize);
     }
-    _header = reinterpret_cast<ip6_hdr*>(buffer);
+    _header = reinterpret_cast<ip6_hdr*>(slice.ptr());
 }
 
 template<>

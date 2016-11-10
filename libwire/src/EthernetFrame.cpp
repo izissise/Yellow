@@ -5,27 +5,11 @@
 
 namespace Net {
 
-EthernetFrame::EthernetFrame(uint8_t* buffer, size_t buffsize) {
-    constexpr size_t headerSize = sizeof(ether_header);
-    if (buffsize < headerSize) {
-        throw WrongSize("Error parsing ethernet header.", headerSize - buffsize, headerSize);
+EthernetFrame::EthernetFrame(data_slice_t const& slice) {
+    if (slice.size() < HeaderSize) {
+        throw WrongSize("Error parsing ethernet header.", HeaderSize - slice.size(), HeaderSize);
     }
-    _header = reinterpret_cast<ether_header*>(buffer);
-
-    buffsize = buffsize - headerSize;
-    buffer = &(buffer[headerSize]);
-
-    switch(type()) {
-        case ETHERTYPE_IP:
-            _ipHeader.reset(networkLayerCreate(Version::V4, buffer, buffsize));
-        break;
-        case ETHERTYPE_IPV6:
-            _ipHeader.reset(networkLayerCreate(Version::V6, buffer, buffsize));
-        break;
-        default:
-            _ipHeader.reset(networkLayerCreate(Version::V4, buffer, buffsize));
-        break;
-    }
+    _header = reinterpret_cast<ether_header*>(slice.ptr());
 }
 
 std::string EthernetFrame::srcAddr() const {

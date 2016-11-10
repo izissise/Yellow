@@ -4,16 +4,11 @@
 
 namespace Net {
 
-Tcp::Tcp(uint8_t* buffer, size_t buffsize)
-: ATransport(buffer, buffsize) {
-    if (buffsize < sizeof(tcphdr)) {
-        throw WrongSize("Error parsing tcp header.", sizeof(tcphdr) - buffsize, sizeof(tcphdr));
+Tcp::Tcp(data_slice_t const& slice) {
+    if (slice.size() < HeaderSize) {
+        throw WrongSize("Error parsing tcp header.", HeaderSize - slice.size(), HeaderSize);
     }
-    _tcpHeader = reinterpret_cast<tcphdr*>(buffer);
-    buffer = &(buffer[sizeof(tcphdr)]);
-    buffsize -= sizeof(tcphdr);
-    _data = buffer;
-    _dataSize = buffsize;
+    _tcpHeader = reinterpret_cast<tcphdr*>(slice.ptr());
 }
 
 }

@@ -4,9 +4,15 @@
 #include <algorithm>
 
 #include "IpHeader.h"
-#include "EthernetFrame.h"
 #include "PcapPacket.h"
 #include "NetUtils.h"
+#include "Placement_ptr.h"
+#include "DataSlice.h"
+
+#include "EthernetFrame.h"
+#include "IpHeader.h"
+
+#include "RawData.h"
 
 namespace Net {
 
@@ -18,11 +24,20 @@ public:
     Packet(Packet const& o);
     Packet& operator=(Packet const& o) = delete;
 
-    EthernetFrame const& ethernetFrame() const { return _ethernetHeader; };
-    EthernetFrame& ethernetFrame() { return _ethernetHeader; };
+    const EthernetFrame* ethernetFrame() const { return &_ethernetHeader; };
+    EthernetFrame* ethernetFrame() { return &_ethernetHeader; };
+
+    const Net::IIpHeader* getNetworkLayer() const { return _ipHeader.get(); }
+    Net::IIpHeader* getNetworkLayer(){ return _ipHeader.get(); }
+
+private:
+    data_slice_t nextSlice(data_slice_t const& current) const;
 
 private:
     EthernetFrame _ethernetHeader;
+    placement_ptr<Net::IIpHeader, networkLayerStorageSize(), networkLayerAlignSize()> _networkHeader;
+
+    data_slice_t   _userData;
 };
 
 }

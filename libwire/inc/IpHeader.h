@@ -14,12 +14,13 @@
 
 #include "Placement_ptr.h"
 
+#include "IPacketComposer.h"
 #include "NetUtils.h"
 #include "Utils.h"
 
 namespace Net {
 
-class IIpHeader {
+class IIpHeader : public IPacketComposer {
 public:
     virtual ~IIpHeader() = default;
 
@@ -29,13 +30,17 @@ public:
     virtual Net::NetAddr dstAddr() const = 0;
 
     virtual size_t hopLimit() const = 0;
+
+protected:
+    virtual data_slice_t getHeaderBasePtr() const = 0;
 };
 
 template<typename HeaderStruct>
 class IpHeader : public IIpHeader {
+    constexpr static size_t HeaderSize = sizeof(HeaderStruct);
 public:
     //! @throw WrongSize
-    IpHeader(uint8_t* buffer, size_t buffsize);
+    IpHeader(data_slice_t const& slice);
     virtual ~IpHeader() = default;
 
     IpHeader(IpHeader const& o) = delete;
@@ -72,6 +77,10 @@ public:
     template<typename T = HeaderStruct, typename std::enable_if<std::is_same<T, ip6_hdr>::value, int>::type = 0>
     uint16_t nextHeader() const;
 
+protected:
+    data_slice_t getHeaderBasePtr() const override {
+        return data_slice_t(reinterpret_cast<uint8_t*>(_header), HeaderSize);
+    }
 
 private:
     HeaderStruct* _header;
