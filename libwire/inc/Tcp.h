@@ -14,8 +14,10 @@
 namespace Net {
 
 class Tcp : public ATransport {
+    constexpr static size_t HeaderSize = sizeof(tcphdr);
 public:
-    Tcp(uint8_t* buffer, size_t buffsize);
+    //! @throw WrongSize
+    Tcp(data_slice_t const& slice);
     virtual ~Tcp() = default;
 
     Net::Transport type() const override { return Net::Transport::TCP; }
@@ -33,6 +35,11 @@ public:
     uint16_t window() const { return ntohs(_tcpHeader->th_win); }
     uint16_t sum() const { return ntohs(_tcpHeader->th_sum); }
     uint16_t urg() const { return ntohs(_tcpHeader->th_urp); }
+
+protected:
+    data_slice_t getHeaderBasePtr() const override {
+        return data_slice_t(reinterpret_cast<uint8_t*>(_tcpHeader), HeaderSize);
+    }
 
 private:
     tcphdr* _tcpHeader;

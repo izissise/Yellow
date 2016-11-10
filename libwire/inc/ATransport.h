@@ -1,23 +1,21 @@
 #ifndef ATRANSPORT_H
 #define ATRANSPORT_H
 
+#include "IPacketComposer.h"
+
 #include "NetUtils.h"
 
 namespace Net {
 
-class ATransport {
+class ATransport  : public IPacketComposer {
 public:
-    ATransport(uint8_t* data, size_t dataSize);
+    ATransport() = default;
     virtual ~ATransport() = default;
 
     virtual Net::Transport type() const { return Net::Transport::UNKNOWN; };
 
-    uint8_t* data() const { return _data; }
-    size_t dataSize() const { return _dataSize; }
-
 protected:
-    uint8_t* _data;
-    size_t   _dataSize;
+    virtual data_slice_t getHeaderBasePtr() const = 0;
 };
 
 }

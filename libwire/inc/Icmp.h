@@ -16,8 +16,10 @@
 namespace Net {
 
 class Icmp : public ATransport {
+    constexpr static size_t HeaderSize = sizeof(icmphdr);
 public:
-    Icmp(uint8_t* buffer, size_t buffsize);
+    //! @throw WrongSize
+    Icmp(data_slice_t const& slice);
     virtual ~Icmp() = default;
 
     Net::Transport type() const override { return Net::Transport::ICMP; }
@@ -29,6 +31,11 @@ public:
     uint16_t seq() const { return ntohs(_icmpHeader->un.echo.sequence); }
 
     Net::NetAddr gateway() const { return NetAddr(_icmpHeader->un.gateway); };
+
+protected:
+    data_slice_t getHeaderBasePtr() const override {
+        return data_slice_t(reinterpret_cast<uint8_t*>(_icmpHeader), HeaderSize);
+    }
 
 private:
     icmphdr* _icmpHeader;

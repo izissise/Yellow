@@ -15,8 +15,10 @@
 namespace Net {
 
 class Udp : public ATransport {
+    constexpr static size_t HeaderSize = sizeof(udphdr);
 public:
-    Udp(uint8_t* buffer, size_t buffsize);
+    //! @throw WrongSize
+    Udp(data_slice_t const& slice);
     virtual ~Udp() = default;
 
     Net::Transport type() const override { return Net::Transport::UDP; }
@@ -32,6 +34,11 @@ public:
 
     uint16_t checksum() const { return  ntohs(_udpHeader->uh_sum); };
     void     checksum(uint16_t sum) { _udpHeader->uh_sum = htons(sum); }
+
+protected:
+    data_slice_t getHeaderBasePtr() const override {
+        return data_slice_t(reinterpret_cast<uint8_t*>(_udpHeader), HeaderSize);
+    }
 
 private:
     udphdr* _udpHeader;

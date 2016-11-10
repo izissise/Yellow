@@ -6,7 +6,10 @@
 #include <iterator>
 #include <string>
 
+#include "DataSlice.h"
+
 typedef std::vector<uint8_t> data_t;
+typedef DataSlice<uint8_t>   data_slice_t;
 
 template<typename Store>
 data_t subData(Store const& d, size_t s) {
