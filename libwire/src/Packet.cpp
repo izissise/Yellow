@@ -1,16 +1,13 @@
 #include "Packet.h"
 
-#include "IpHeader.h"
-#include "Udp.h"
-#include "Tcp.h"
-
 namespace Net {
 
 Packet::Packet(data_t const& buffer)
 : Net::PcapPacket(buffer), _ethernetHeader(data_slice_t(_packet)) {
-    auto slice = nextSlice(static_cast<IPacketComposer*>(ethernetFrame())->getHeaderBasePtr());
+    auto eth = ethernetFrame();
+    auto slice = nextSlice(static_cast<IPacketComposer*>(eth)->getHeaderBasePtr());
 //NetworkLayerStuff
-    switch(_ethernetHeader.type()) {
+    switch(eth->type()) {
         case ETHERTYPE_IP:
             _networkHeader.reset(placement_ptr<IpHeaderV4, decltype(_networkHeader)::StoreSize, decltype(_networkHeader)::StoreAlign>(slice));
             break;
@@ -23,8 +20,21 @@ Packet::Packet(data_t const& buffer)
     }
     slice = nextSlice(static_cast<IPacketComposer*>(_networkHeader.get())->getHeaderBasePtr());
 //TransportLayerStuff
-
-//     _userData = nextSlice(_networkHeader->getHeaderBasePtr());
+    switch(_networkHeader->nextHeader()) {
+        case IPPROTO_TCP:
+            _transportHeader.reset(placement_ptr<Tcp, decltype(_transportHeader)::StoreSize, decltype(_transportHeader)::StoreAlign>(slice));
+            break;
+        case IPPROTO_UDP:
+            _transportHeader.reset(placement_ptr<Udp, decltype(_transportHeader)::StoreSize, decltype(_transportHeader)::StoreAlign>(slice));
+            break;
+        case IPPROTO_ICMP:
+            _transportHeader.reset(placement_ptr<Icmp, decltype(_transportHeader)::StoreSize, decltype(_transportHeader)::StoreAlign>(slice));
+            break;
+        default:
+            _transportHeader.reset(placement_ptr<Udp, decltype(_transportHeader)::StoreSize, decltype(_transportHeader)::StoreAlign>(slice));
+            break;
+    }
+    _userData = nextSlice(static_cast<IPacketComposer*>(_transportHeader.get())->getHeaderBasePtr());
 }
 
 Packet::Packet(Net::Packet const& o)
