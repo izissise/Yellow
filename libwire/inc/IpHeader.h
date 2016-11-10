@@ -127,24 +127,6 @@ inline uint16_t IpHeader<ip6_hdr>::nextHeader() const {
 typedef IpHeader<iphdr> IpHeaderV4;
 typedef IpHeader<ip6_hdr> IpHeaderV6;
 
-constexpr size_t networkLayerStorageSize() {
-    return std::max(sizeof(IpHeaderV4), sizeof(IpHeaderV6));
-}
-
-constexpr size_t networkLayerAlignSize() {
-    return std::min(alignof(IpHeaderV4), alignof(IpHeaderV6));
-}
-
-//! @throw WrongSize
-inline placement_ptr<Net::IIpHeader, networkLayerStorageSize(), networkLayerAlignSize()> networkLayerCreate(Net::Version version, uint8_t* buffer, size_t buffsize) {
-    if (version == Version::V4) {
-        return placement_ptr<Net::IpHeaderV4, networkLayerStorageSize(), networkLayerAlignSize()>(buffer, buffsize);
-    } else if (version == Version::V6) {
-        return placement_ptr<Net::IpHeaderV6, networkLayerStorageSize(), networkLayerAlignSize()>(buffer, buffsize);
-    }
-    return placement_ptr<Net::IpHeaderV4, networkLayerStorageSize(), networkLayerAlignSize()>(buffer, buffsize);
-}
-
 }
 
 #endif // IPHEADER_H

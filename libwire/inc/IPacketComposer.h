@@ -5,7 +5,11 @@
 
 namespace Net {
 
+class Packet;
+
 class IPacketComposer {
+    friend class Packet;
+
 public:
     virtual ~IPacketComposer() = default;
 

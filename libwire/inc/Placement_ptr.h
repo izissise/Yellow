@@ -17,6 +17,9 @@ struct empty_delete {
 
 template<typename Type, size_t TypeSize = sizeof(Type), size_t TypeAlign = alignof(Type)>
 class placement_ptr : public std::unique_ptr<Type, empty_delete<Type>> {
+public:
+    constexpr static size_t StoreSize = TypeSize;
+    constexpr static size_t StoreAlign = TypeAlign;
     using StoreType = typename std::aligned_storage<TypeSize, TypeAlign>::type;
     template<typename, size_t, size_t> friend class placement_ptr;
 
@@ -54,7 +57,7 @@ public:
             std::unique_ptr<Type, empty_delete<Type>>::reset(nullptr);
         } else {
             std::swap(_store, o._store);
-            auto tmpPtr = this->get();
+            OtherType* tmpPtr = reinterpret_cast<OtherType*>(this->get());
             std::unique_ptr<Type, empty_delete<Type>>::reset(reinterpret_cast<Type*>(&_store));
             o.std::unique_ptr<OtherType, empty_delete<OtherType>>::reset(tmpPtr);
         }

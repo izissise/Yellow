@@ -8,6 +8,10 @@
 template<typename DataType, typename std::enable_if<std::is_pod<DataType>::value, int>::type = 0>
 class DataSlice {
 public:
+    DataSlice()
+    : _ptr(nullptr), _size(0) {
+    }
+
     DataSlice(DataType* ptr, size_t size)
     : _ptr(ptr), _size(size) {
     }
