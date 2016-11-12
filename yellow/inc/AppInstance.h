@@ -57,11 +57,12 @@ namespace App {
         void AddFontDir(QString const& dir);
         void packetShower(data_t const& data);
         void networkSetupAndSniff();
-
+        void showData();
 
     private:
         std::unique_ptr<QQuickView> _view;
         QList<QObject*> _dataList;
+        std::thread _thr1;
 
     };
 
@@ -95,7 +96,7 @@ namespace App {
         DataObject(QObject *parent=0);
         DataObject(const QString &EtSrc,const QString &EtDst,const QString &IpSrc,const QString &IpDst, const QString &IpTll,
         const QString &Ipv,const QString &Protocol,const QString &SrcPrt,
-        const QString &DstPrt,const QString &data,const QString &Checksum, QObject *parent=0)
+        const QString &DstPrt,const QString &data,const QString &Checksum)
         {
             m_EtSrc = EtSrc;
             m_EtDst = EtDst;
