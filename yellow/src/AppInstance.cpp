@@ -38,6 +38,15 @@ namespace App {
 
     }
 
+    void Instance::showData() {
+        // TODO PUT IN .h
+        
+        QQuickItem *object = _view->QQuickView::rootObject();
+        //
+        auto showed_data = _dataList;
+        object->setProperty("dataModel", QVariant::fromValue(showed_data));
+    }
+
     void Instance::networkSetupAndSniff() {
         std::unique_ptr<Net::ANetwork> net = std::make_unique<Net::LinuxNetwork>();
         auto face = Net::listInterfaces();
@@ -54,11 +63,21 @@ namespace App {
         rawSock->startSniffing(face[1], true);
 
 
+
         int i = 15;
-       // while (1) {
+      //  while (1) {
         while (i>0) {
             try {
+
+                // std::thread t{ [&] {
+                //         net->poll(true);
+
+                //     }
+                // }; 
+
                 net->poll(true);
+                showData();
+
             } catch (std::exception e) {
                 std::cerr << e.what() << std::endl;
             }
@@ -86,7 +105,14 @@ namespace App {
         // QQuickItem *object = _view->QQuickView::rootObject();        
         // object->setProperty("dataModel", QVariant::fromValue(dataList));
 
-        
+       // std::thread thr2([this](){networkSetupAndSniff();});
+    //_thr1.swap(thr2); 
+
+
+        // sion::
+        // essqyer de passer un pointer sur fonction dans le while 1 ?
+
+
         networkSetupAndSniff();
 
 
@@ -130,7 +156,7 @@ namespace App {
         << ip->hopLimit() << " Version: " << (ip->version() == Net::Version::V6 ? "6" : "4") << std::endl;
         std::cout << "   - : " << (proto->type() == Net::Transport::TCP ? "Tcp" : (proto->type() == Net::Transport::UDP ? "Udp" : (proto->type() == Net::Transport::ICMP) ? "Icmp" : "Unknown")) << std::endl;
 
-            QQuickItem *object = _view->QQuickView::rootObject();
+            //QQuickItem *object = _view->QQuickView::rootObject();
 
         /// VERY MOCHE
         std::ostringstream stm ;
@@ -196,8 +222,8 @@ namespace App {
 
             
             _dataList.append(dataObject);
-            
-            object->setProperty("dataModel", QVariant::fromValue(_dataList));
+
+           // object->setProperty("dataModel", QVariant::fromValue(_dataList));
 
         }
 
@@ -232,7 +258,7 @@ namespace App {
             
             _dataList.append(dataObject);
             
-            object->setProperty("dataModel", QVariant::fromValue(_dataList));
+           // object->setProperty("dataModel", QVariant::fromValue(_dataList));
 
 
         }
@@ -261,7 +287,7 @@ namespace App {
 
             _dataList.append(dataObject);
             
-            object->setProperty("dataModel", QVariant::fromValue(_dataList));
+           // object->setProperty("dataModel", QVariant::fromValue(_dataList));
 
 
         }
@@ -295,9 +321,6 @@ namespace App {
         std::cout << "---------: " << std::endl;
         std::cout << "---------: " << std::endl;
 
-        QString we_are = "Dauphin sur cable -1";
-
-        object->setProperty("text2Text",QVariant(we_are));
 
 
     } catch (WrongSize e) {
