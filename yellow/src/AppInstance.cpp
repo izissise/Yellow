@@ -79,6 +79,16 @@ namespace App {
     }
 
 
+    // TODO :
+    //
+    // add filters:
+    // - list of filer (ip src, ip dest etc.)
+    // - get string of filter 
+    // - modify showed_data list before the set property
+    //
+    /////
+
+
 
     void Instance::starting_process() {
         go_on = true;
@@ -91,11 +101,6 @@ namespace App {
     }
 
     void Instance::showData(QQuickItem *object) {     
-
-        std::cout << "refresh" << std::endl;
-        //
-
-        std::cout << object << std::endl;
 
         auto showed_data = _dataList;
 
@@ -118,93 +123,29 @@ namespace App {
 
         rawSock->startSniffing(face[1], true);
 
-        //
-        //std::thread t1([this](){networkSetupAndSniff();});
-
-        // QFuture<void> f1 = QtConcurrent::run([&net](){
-        //     while (1) {
-        //         std::cout << "poll "  << std::endl; 
-        //         net->poll(true);
-        //     }
-        // });
-        // QFuture<void> f2 = QtConcurrent::run([this](){
-        //     QQuickItem *object = _view->QQuickView::rootObject();
-        //     while (1) {
-        //         showData(object);
-        //         usleep(50000); //50ms
-        //     }
-        //});
-        // QEventLoop loop;
-        // QObject::connect(_net->poll(true), SIGNAL (finished()), &loop, SLOT (quit()));
-        // loop.exec();
+     
  
         QQuickItem *object_ = _view->QQuickView::rootObject();
 
-         int i ;
-         //while (i>0) {
-         while (go_on) {
-            i = 4;
-            while (i>0) {
-                net->poll(true);
-                i--;
-            }
+       
 
-            showData(object_);
-            QApplication::processEvents();
+            while (go_on) {
+                net->poll();
+                showData(object_);
 
         }
+
     }
 
 
 
-    // void Instance::networkSetup() {
-    //     //std::unique_ptr<Net::ANetwork> _net = std::make_unique<Net::LinuxNetwork>();
-    //      _net = std::make_unique<Net::LinuxNetwork>();
-    //     auto face = Net::listInterfaces();
-    //     for (auto& i : face){
-    //         std::cout << i.getName() << " " << i.getAddr() << std::endl;
-    //     }
-       
-    //     //void (Instance::*shower)(data_t const& data) = &Instance::packetShower; 
-
-    //     //std::shared_ptr<Net::ARawSocket> rawSock = std::make_shared<Net::LinuxRawSocket>(shower);
-    //     std::shared_ptr<Net::ARawSocket> rawSock = std::make_shared<Net::LinuxRawSocket>([this](data_t const& data){packetShower(data);});
-        
-    //     _net->registerRawSocket(rawSock);
-    //     rawSock->startSniffing(face[1], true);
-    // }
-
-
-    // void Instance::Sniff() {
-    //     while (1) {
-    //         _net->poll(true);
-    //         //showData();
-    //     }
-    // }
-
-    //     // sleep 10ms ?
-    //     //usleep(10000);
-    //     // std::cout << counter << std::endl;
-    //     // counter++;
-    //     // if (go_on && counter < 200) {
-    //     //     Sniff();
-    //     // }
-
-    // }
 
     int Instance::run(int argc, char** argv) {
         QApplication application(argc, argv);
 
         init();
 
-        // tread 
-        //         networkSetupAndSniff();
-        //std::thread t1([this](){networkSetupAndSniff();});
-        
-
-        //networkSetup();
-    
-        //QTimer::singleShot(0, &w, SLOT(showGUI()));
+      
         return application.exec();
         //
     }
@@ -222,16 +163,6 @@ namespace App {
 
     try {
 
-        //_view->show();
-
-        // auto dataObject = new DataObject("test", "test","test", "test","test", "test","test", "test","test", "test");
-
-        // QQuickItem *object = _view->QQuickView::rootObject();
-        
-        // QList<QObject*> dataList;
-        // dataList.append(dataObject);
-        
-        // object->setProperty("dataModel", QVariant::fromValue(dataList));
 
         Net::Packet packet(data);
 
@@ -378,30 +309,11 @@ namespace App {
 
             _dataList.append(dataObject);
             
-           // object->setProperty("dataModel", QVariant::fromValue(_dataList));
 
 
         }
 
-        /////
-        // SET INTO VIEW
-        //
-
-        // QQuickItem *object = _view->QQuickView::rootObject();
-        
-        // QList<QObject*> dataList;
-        // dataList.append(dataObject);
-        
-        // object->setProperty("dataModel", QVariant::fromValue(dataList));
-
-        // 
-        ////
-        //////
-
-
-
-        //std::cout << _dataList.size() << std::endl;
-
+       
 
 
     } catch (WrongSize e) {
