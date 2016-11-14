@@ -47,7 +47,7 @@ Rectangle {
     }
     Text {
         id: text2
-        x: 304
+        x: 218
         y: 30
         width: 129
         height: 15
@@ -136,7 +136,39 @@ Rectangle {
 
 
 
-       //model: dataModel2
+        //model: dataModel2
+    }
+
+    Button {
+        id: button1
+        x: 363
+        y: 30
+        onClicked: _myClass.start("sniff")
+        text: qsTr("start")
+    }
+
+    Button {
+        id: button2
+        x: 449
+        y: 30
+        onClicked: _myClass.stop("sniff")
+        text: qsTr("stop")
+    }
+
+    Button {
+        id: button3
+        x: 564
+        y: 30
+        onClicked: _myClass.clear("sniff")
+        text: qsTr("clear")
+    }
+
+    Button {
+        id: button4
+        x: 650
+        y: 30
+        onClicked: _myClass.clear_stop("sniff")
+        text: qsTr("clear and stop")
     }
 
 
