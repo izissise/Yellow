@@ -20,6 +20,7 @@ namespace App {
         auto engine = _view->engine();
 
         engine->addImportPath(resourceDir + "/qml");
+        engine->rootContext()->setContextProperty("_myClass", this);
 
         _view->setSource(QUrl::fromLocalFile(resourceDir + "/qml/App/window.qml"));
 
@@ -38,52 +39,158 @@ namespace App {
 
     }
 
-    void Instance::showData() {
-        // TODO PUT IN .h
-        
-        QQuickItem *object = _view->QQuickView::rootObject();
-        //
-        auto showed_data = _dataList;
-        object->setProperty("dataModel", QVariant::fromValue(showed_data));
+    void Instance::start(const QString &in)
+    {
+        //std::cout << in << std::endl;
+        auto test = in;
+        starting_process();
     }
+
+    void Instance::stop(const QString &in)
+    {
+        //std::cout << in << std::endl;
+        auto test = in;
+        stop_process();
+    }
+
+    void Instance::clear_stop(const QString &in)
+    {
+        //std::cout << in << std::endl;
+        auto test = in;
+        stop_process();
+        clear_datalist();
+   
+    }
+
+    void Instance::clear(const QString &in)
+    {
+        //std::cout << in << std::endl;
+        auto test = in;
+        clear_datalist();
+   
+    }
+
+    void Instance::clear_datalist()
+    {
+        _dataList.clear();
+        QQuickItem *object_ = _view->QQuickView::rootObject();
+        showData(object_);
+   
+    }
+
+
+
+    void Instance::starting_process() {
+        go_on = true;
+        //Sniff();
+        networkSetupAndSniff();
+    }
+
+    void Instance::stop_process() {
+        go_on = false;
+    }
+
+    void Instance::showData(QQuickItem *object) {     
+
+        std::cout << "refresh" << std::endl;
+        //
+
+        std::cout << object << std::endl;
+
+        auto showed_data = _dataList;
+
+        object->setProperty("dataModel", QVariant::fromValue(showed_data));
+        QApplication::processEvents();
+    }
+
 
     void Instance::networkSetupAndSniff() {
         std::unique_ptr<Net::ANetwork> net = std::make_unique<Net::LinuxNetwork>();
+        // _net = std::make_unique<Net::LinuxNetwork>();
         auto face = Net::listInterfaces();
         for (auto& i : face){
             std::cout << i.getName() << " " << i.getAddr() << std::endl;
         }
        
-        //void (Instance::*shower)(data_t const& data) = &Instance::packetShower; 
-
-        //std::shared_ptr<Net::ARawSocket> rawSock = std::make_shared<Net::LinuxRawSocket>(shower);
         std::shared_ptr<Net::ARawSocket> rawSock = std::make_shared<Net::LinuxRawSocket>([this](data_t const& data){packetShower(data);});
         
         net->registerRawSocket(rawSock);
+
         rawSock->startSniffing(face[1], true);
 
+        //
+        //std::thread t1([this](){networkSetupAndSniff();});
 
+        // QFuture<void> f1 = QtConcurrent::run([&net](){
+        //     while (1) {
+        //         std::cout << "poll "  << std::endl; 
+        //         net->poll(true);
+        //     }
+        // });
+        // QFuture<void> f2 = QtConcurrent::run([this](){
+        //     QQuickItem *object = _view->QQuickView::rootObject();
+        //     while (1) {
+        //         showData(object);
+        //         usleep(50000); //50ms
+        //     }
+        //});
+        // QEventLoop loop;
+        // QObject::connect(_net->poll(true), SIGNAL (finished()), &loop, SLOT (quit()));
+        // loop.exec();
+ 
+        QQuickItem *object_ = _view->QQuickView::rootObject();
 
-        int i = 15;
-      //  while (1) {
-        while (i>0) {
-            try {
-
-                // std::thread t{ [&] {
-                //         net->poll(true);
-
-                //     }
-                // }; 
-
+         int i ;
+         //while (i>0) {
+         while (go_on) {
+            i = 4;
+            while (i>0) {
                 net->poll(true);
-                showData();
-
-            } catch (std::exception e) {
-                std::cerr << e.what() << std::endl;
+                i--;
             }
-            i--;
+
+            showData(object_);
+            QApplication::processEvents();
+
         }
     }
+
+
+
+    // void Instance::networkSetup() {
+    //     //std::unique_ptr<Net::ANetwork> _net = std::make_unique<Net::LinuxNetwork>();
+    //      _net = std::make_unique<Net::LinuxNetwork>();
+    //     auto face = Net::listInterfaces();
+    //     for (auto& i : face){
+    //         std::cout << i.getName() << " " << i.getAddr() << std::endl;
+    //     }
+       
+    //     //void (Instance::*shower)(data_t const& data) = &Instance::packetShower; 
+
+    //     //std::shared_ptr<Net::ARawSocket> rawSock = std::make_shared<Net::LinuxRawSocket>(shower);
+    //     std::shared_ptr<Net::ARawSocket> rawSock = std::make_shared<Net::LinuxRawSocket>([this](data_t const& data){packetShower(data);});
+        
+    //     _net->registerRawSocket(rawSock);
+    //     rawSock->startSniffing(face[1], true);
+    // }
+
+
+    // void Instance::Sniff() {
+    //     while (1) {
+    //         _net->poll(true);
+    //         //showData();
+    //     }
+    // }
+
+    //     // sleep 10ms ?
+    //     //usleep(10000);
+    //     // std::cout << counter << std::endl;
+    //     // counter++;
+    //     // if (go_on && counter < 200) {
+    //     //     Sniff();
+    //     // }
+
+    // }
 
     int Instance::run(int argc, char** argv) {
         QApplication application(argc, argv);
@@ -93,29 +200,11 @@ namespace App {
         // tread 
         //         networkSetupAndSniff();
         //std::thread t1([this](){networkSetupAndSniff();});
+        
 
-
-        //networkSetupAndSniff();
-
-        // auto dataObject = new DataObject("test", "test","test", "test","test", "test","test", "test","test", "test");
-        // QList<QObject*> dataList;
-        // dataList.append(dataObject);
-
-
-        // QQuickItem *object = _view->QQuickView::rootObject();        
-        // object->setProperty("dataModel", QVariant::fromValue(dataList));
-
-       // std::thread thr2([this](){networkSetupAndSniff();});
-    //_thr1.swap(thr2); 
-
-
-        // sion::
-        // essqyer de passer un pointer sur fonction dans le while 1 ?
-
-
-        networkSetupAndSniff();
-
-
+        //networkSetup();
+    
+        //QTimer::singleShot(0, &w, SLOT(showGUI()));
         return application.exec();
         //
     }
@@ -130,7 +219,9 @@ namespace App {
 
 
     void Instance::packetShower(data_t const& data) {
+
     try {
+
         //_view->show();
 
         // auto dataObject = new DataObject("test", "test","test", "test","test", "test","test", "test","test", "test");
@@ -309,17 +400,7 @@ namespace App {
 
 
 
-        std::cout << "TEEEEEEEEEEEEEEEEEEST: " << std::endl;
-        std::cout << "TEEEEEEEEEEEEEEEEEEST: " << std::endl;
-        std::cout << "TEEEEEEEEEEEEEEEEEEST: " << std::endl;
-        std::cout << "TEEEEEEEEEEEEEEEEEEST: " << std::endl;
-        std::cout << "TEEEEEEEEEEEEEEEEEEST: " << std::endl;
-        std::cout << "TEEEEEEEEEEEEEEEEEEST: " << std::endl;
-        std::cout << "TEEEEEEEEEEEEEEEEEEST: " << std::endl;
-        std::cout << "TEEEEEEEEEEEEEEEEEEST: " << std::endl;
-        std::cout << _dataList.size() << std::endl;
-        std::cout << "---------: " << std::endl;
-        std::cout << "---------: " << std::endl;
+        //std::cout << _dataList.size() << std::endl;
 
 
 

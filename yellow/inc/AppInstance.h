@@ -33,6 +33,10 @@
 
 #include <string>
 #include <sstream>
+#include <unistd.h>
+
+#include <QThread>
+#include <qtconcurrentrun.h>
 
 namespace patch
 {
@@ -46,7 +50,10 @@ namespace patch
 
 
 namespace App {
-    class Instance {
+    class Instance : public QObject {
+
+        Q_OBJECT
+
     public:
         Instance() = default;
         ~Instance() = default;
@@ -56,13 +63,34 @@ namespace App {
         void init();
         void AddFontDir(QString const& dir);
         void packetShower(data_t const& data);
+        //void networkSetup();
+        void Sniff();
         void networkSetupAndSniff();
-        void showData();
+        void starting_process();
+        void stop_process();
+        void clear_datalist();
+        void showData(QQuickItem*);
+
+
 
     private:
         std::unique_ptr<QQuickView> _view;
         QList<QObject*> _dataList;
         std::thread _thr1;
+
+        //std::unique_ptr<Net::ANetwork> _net;
+
+        bool go_on = true;
+
+        int counter = 0;
+
+    public slots:
+    // This method needs to take either a QString or a const reference to one.
+    // (QML doesn't support returning values via the parameter list.)
+    void start(const QString& in);
+    void stop(const QString& in);
+    void clear(const QString& in);
+    void clear_stop(const QString& in);
 
     };
 
