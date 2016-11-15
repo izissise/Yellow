@@ -33,11 +33,16 @@ void EthernetFrame::dstAddr(std::string const& mac) {
 }
 
 void EthernetFrame::setMacAddr(unsigned char* buff, std::string const& mac) {
+    unsigned int tmpBuff[6];
+    char c;
     if (std::sscanf(mac.c_str(),
-        "%02s:%02s:%02s:%02s:%02s:%02s",
-        &buff[0], &buff[1], &buff[2],
-        &buff[3], &buff[4], &buff[5]) != 6) {
+        "%x:%x:%x:%x:%x:%x%c",
+        &tmpBuff[0], &tmpBuff[1], &tmpBuff[2],
+        &tmpBuff[3], &tmpBuff[4], &tmpBuff[5], &c) != 6) {
         throw std::runtime_error(mac + std::string(" is an invalid MAC address"));
+    }
+    for (size_t i = 0; i < 6; ++i) {
+        buff[i] = static_cast<uint8_t>(tmpBuff[i]);
     }
 }
 

@@ -34,10 +34,12 @@ public:
     EthernetFrame* ethernetFrame() { return &_ethernetHeader; };
 
     const Net::INetworkFrame* getNetworkLayer() const { return _networkHeader.get(); }
-    Net::INetworkFrame* getNetworkLayer(){ return _networkHeader.get(); }
+    Net::INetworkFrame* getNetworkLayer() { return _networkHeader.get(); }
 
     const Net::ATransport* getTransportLayer() const { return _transportHeader.get(); }
-    Net::ATransport* getTransportLayer(){ return _transportHeader.get(); }
+    Net::ATransport* getTransportLayer() { return _transportHeader.get(); }
+
+    data_t getPayload() const { return data_t(_userData.ptr(), &(_userData.ptr()[_userData.size()])); }
 
 private:
     data_slice_t nextSlice(data_slice_t const& current);
