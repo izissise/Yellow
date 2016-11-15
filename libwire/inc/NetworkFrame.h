@@ -68,7 +68,7 @@ private:
 
 protected:
     data_slice_t getHeaderBasePtr() const override {
-        return data_slice_t(reinterpret_cast<uint8_t*>(_header), HeaderSize);
+        return data_slice_t(reinterpret_cast<uint8_t*>(_header), headerSizeInBytes());
     }
 
 private:
