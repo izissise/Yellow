@@ -10,9 +10,10 @@ Rectangle {
     height: 768;
     property alias text2Text: text2.text
     property alias dataModel: mTableView.model
+    property alias search: textEdit1.text
+    property alias currentchoice: box.currentText
 
     color: "#282C34"
-
     Column {
         anchors.centerIn: parent;
 
@@ -34,25 +35,23 @@ Rectangle {
             text: Qt.application.organization + " " + Qt.application.domain
         }
     }
-
-    Text {
-        id: text1
-        x: 46
-        y: 30
-        width: 166
-        height: 15
-        color: "#ffffff"
-        text: qsTr("HELLO")
-        font.pixelSize: 12
-    }
     Text {
         id: text2
-        x: 218
-        y: 30
+        x: 42
+        y: 8
         width: 129
         height: 15
         color: "#ffffff"
         font.pixelSize: 12
+    }
+
+    ComboBox {
+        id: box
+        x: 634
+        y: 48
+        width: 126
+        height: 22
+        model: [ "Ethernet - Src", "Ethernet - Dst", "IP - Src", "IP - Dst", "TLL", "Version","Protocol","SrcPort" , "DstPort", "data", "Checksum"  ]
     }
 
 //        ListModel {
@@ -104,7 +103,7 @@ Rectangle {
             width: 80
         }
         TableViewColumn {
-            role: "IpV"
+            role: "Ipv"
             title: "Version"
             width: 90
         }
@@ -135,41 +134,64 @@ Rectangle {
         }
 
 
-
         //model: dataModel2
     }
 
     Button {
         id: button1
-        x: 363
-        y: 30
+        x: 8
+        y: 48
         onClicked: _myClass.start("sniff")
         text: qsTr("start")
     }
 
     Button {
         id: button2
-        x: 449
-        y: 30
+        x: 101
+        y: 48
         onClicked: _myClass.stop("sniff")
         text: qsTr("stop")
     }
 
     Button {
         id: button3
-        x: 564
-        y: 30
+        x: 200
+        y: 48
         onClicked: _myClass.clear("sniff")
         text: qsTr("clear")
     }
 
     Button {
         id: button4
-        x: 650
-        y: 30
+        x: 286
+        y: 48
         onClicked: _myClass.clear_stop("sniff")
         text: qsTr("clear and stop")
     }
+
+
+
+    Button {
+        id: button5
+        x: 893
+        y: 48
+        onClicked: _myClass.filter("sniff")
+        text: qsTr("Filter")
+    }
+
+        TextInput {
+            id: textEdit1//
+            x: 769
+            y: 48
+            width: 116
+            height: 22
+            color: "#ffffff"
+            font.pixelSize: 12
+            text: qsTr("filtre")
+
+        }
+
+
 
 
 }
