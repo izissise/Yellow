@@ -36,25 +36,26 @@ TEST_CASE("Ip Headers tests", "[net][ip][packet]") {
         CHECK_THROWS_AS(Net::IpHeaderV4 frame2(data2), WrongSize);
         REQUIRE_THROWS_AS(Net::IpHeaderV6 frame3(data), WrongSize);
     }
-/*
+
     SECTION("Should set the right values") {
-        uint8_t shouldBe[] = "\x00\xbe\x5f\x97\x3d\x2c\x10\x08\xb1\x60\xb2\xff\x78\x52\x45\x00\x00\x3f\x28\xbc\x40\x00\x40\x06\xc8\x0e\xc0\xa8\x01\x4e\xc2\x84\xc5\x73\xfd\x12\x0f\xe6\x6d\xd7\xc5\xcc\x19\x65\xcc\x99\x80\x18\x01\x1c\x4a\x20\x00\x00\x01\x01\x08\x0a\x34\x42\xb1\xb3\x1c\xc7\xb3\x03\xcc\xeb\x32\xbd\xee\x5b\x32\xfb\xd7\xa2\x64";
+        data_slice_t data(d, sizeof(d) -1);
+        data_slice_t datav6(dv6, sizeof(dv6) -1);
+        Net::IpHeaderV4 ipv4(data);
+        Net::IpHeaderV6 ipv6(datav6);
 
-        //Copy data
-        uint8_t dcpy[sizeof(d)];
-        std::memcpy(dcpy, d, sizeof(d));
-        data_slice_t data(dcpy, sizeof(d) -1);
-        Net::EthernetFrame frame(data);
+        ipv4.nextHeader(0x67);
+        ipv6.nextHeader(0x00);
+        REQUIRE_NOTHROW(ipv4.dstAddr(Net::NetAddr("192.168.1.1")));
+        REQUIRE_NOTHROW(ipv6.dstAddr(Net::NetAddr("2502:8435:c2e:4801:54ba:640:b0b8:8b72")));
+        REQUIRE_THROWS(ipv4.srcAddr(Net::NetAddr()));
+        REQUIRE_THROWS(ipv4.srcAddr(Net::NetAddr("jflwef")));
+        REQUIRE_THROWS(ipv4.srcAddr(Net::NetAddr("2002:8435:c2e:4801:54ba:640:b0b8:8b72")));
+        REQUIRE_THROWS(ipv4.srcAddr(Net::NetAddr("345.983.1.3")));
+        CHECK(ipv4.srcAddr().addr() == "192.168.1.78");
+        CHECK(ipv4.dstAddr().addr() == "192.168.1.1");
+        CHECK(ipv4.nextHeader() == 0x67);
 
-        frame.type(0x7852);
-        CHECK(frame.type() == 0x7852);
-        REQUIRE_NOTHROW(frame.dstAddr("00:be:5F:97:3d:2c"));
-        CHECK_THROWS_AS(frame.srcAddr("67:0:be:3d:2c"), std::runtime_error);
-        CHECK_THROWS_AS(frame.srcAddr("934"), std::runtime_error);
-        CHECK_THROWS_AS(frame.srcAddr("gdgrt"), std::runtime_error);
-        CHECK_THROWS_AS(frame.srcAddr(""), std::runtime_error);
-        CHECK(frame.dstAddr() == "00:BE:5F:97:3D:2C");
-        CHECK(frame.srcAddr() == "10:08:B1:60:B2:FF");
-        CHECK(std::string(dcpy, &(dcpy[sizeof(dcpy)])) == std::string(shouldBe, &(shouldBe[sizeof(shouldBe)])));
-    }*/
+        CHECK(ipv6.dstAddr().addr() == "2502:8435:c2e:4801:54ba:640:b0b8:8b72");
+        CHECK(ipv6.nextHeader() == 0x00);
+    }
 }

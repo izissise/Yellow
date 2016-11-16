@@ -40,16 +40,32 @@ Net::NetAddr IpHeaderV4::srcAddr() const {
    return Net::NetAddr(_header->saddr);
 }
 
+void IpHeaderV4::srcAddr(Net::NetAddr const& addr) {
+    _header->saddr = addr.addrGetRawV4();
+}
+
 Net::NetAddr IpHeaderV6::srcAddr() const {
     return Net::NetAddr(_header->ip6_src);
+}
+
+void IpHeaderV6::srcAddr(Net::NetAddr const& addr) {
+    _header->ip6_src = addr.addrGetRawV6();
 }
 
 Net::NetAddr IpHeaderV4::dstAddr() const {
     return Net::NetAddr(_header->daddr);
 }
 
+void IpHeaderV4::dstAddr(Net::NetAddr const& addr) {
+    _header->daddr = addr.addrGetRawV4();
+}
+
 Net::NetAddr IpHeaderV6::dstAddr() const {
     return Net::NetAddr(_header->ip6_dst);
+}
+
+void IpHeaderV6::dstAddr(Net::NetAddr const& addr) {
+    _header->ip6_dst = addr.addrGetRawV6();
 }
 
 size_t IpHeaderV4::hopLimit() const {
@@ -97,6 +113,13 @@ uint8_t IpHeaderV4::nextHeader() const {
     return slice.ptr()[0];
 }
 
+void IpHeaderV4::nextHeader(uint8_t type) {
+    auto slice = getOptionsField();
+    if (!(slice.ptr() == nullptr || slice.size() == 0)) {
+        slice.ptr()[0] = type;
+    }
+}
+
 data_slice_t IpHeaderV4::getOptionsField() const {
     uint8_t* ptr = reinterpret_cast<uint8_t*>(_header);
     size_t headerAdOptionsSize = headerSizeInBytes();
@@ -116,6 +139,10 @@ uint16_t IpHeaderV6::payloadLength() const {
 
 uint8_t IpHeaderV6::nextHeader() const {
     return _header->ip6_ctlun.ip6_un1.ip6_un1_nxt;
+}
+
+void IpHeaderV6::nextHeader(uint8_t type) {
+    _header->ip6_ctlun.ip6_un1.ip6_un1_nxt = type;
 }
 
 }

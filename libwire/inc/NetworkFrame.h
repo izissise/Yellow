@@ -29,9 +29,17 @@ public:
     virtual Net::NetAddr srcAddr() const = 0;
     virtual Net::NetAddr dstAddr() const = 0;
 
+    //! @throw std::system_error
+    //! @throw std::runtime_error
+    virtual void srcAddr(Net::NetAddr const& addr) = 0;
+    //! @throw std::system_error
+    //! @throw std::runtime_error
+    virtual void dstAddr(Net::NetAddr const& addr) = 0;
+
     virtual size_t hopLimit() const = 0;
 
     virtual uint8_t nextHeader() const = 0;
+    virtual void nextHeader(uint8_t type) = 0;
 
 protected:
     virtual data_slice_t getHeaderBasePtr() const = 0;
@@ -52,7 +60,12 @@ public:
     Net::NetAddr srcAddr() const override;
     Net::NetAddr dstAddr() const override;
 
+    void srcAddr(Net::NetAddr const& addr) override;
+    void dstAddr(Net::NetAddr const& addr) override;
+
     uint8_t nextHeader() const override;
+    void nextHeader(uint8_t type) override;
+
     size_t hopLimit() const override;
 
     size_t headerSizeInBytes() const;
@@ -91,9 +104,13 @@ public:
     Net::NetAddr srcAddr() const override;
     Net::NetAddr dstAddr() const override;
 
-    size_t hopLimit() const override;
-    uint8_t nextHeader() const override;
+    void srcAddr(Net::NetAddr const& addr) override;
+    void dstAddr(Net::NetAddr const& addr) override;
 
+    uint8_t nextHeader() const override;
+    void nextHeader(uint8_t type) override;
+
+    size_t hopLimit() const override;
 
     uint32_t flow() const;
     uint16_t payloadLength() const;
