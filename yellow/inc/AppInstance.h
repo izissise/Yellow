@@ -49,54 +49,6 @@ namespace patch
 }
 
 
-namespace App {
-    class Instance : public QObject {
-
-        Q_OBJECT
-
-    public:
-        Instance() = default;
-        ~Instance() = default;
-
-        int run(int ac, char *av[]);
-    private:
-        void init();
-        void AddFontDir(QString const& dir);
-        void packetShower(data_t const& data);
-        //void networkSetup();
-        void Sniff();
-        void networkSetupAndSniff();
-        void starting_process();
-        void stop_process();
-        void clear_datalist();
-        void showData(QQuickItem*);
-
-
-
-    private:
-        std::unique_ptr<QQuickView> _view;
-        QList<QObject*> _dataList;
-        std::thread _thr1;
-
-        //std::unique_ptr<Net::ANetwork> _net;
-
-        bool go_on = true;
-
-        int counter = 0;
-
-    public slots:
-    // This method needs to take either a QString or a const reference to one.
-    // (QML doesn't support returning values via the parameter list.)
-    void start(const QString& in);
-    void stop(const QString& in);
-    void clear(const QString& in);
-    void clear_stop(const QString& in);
-
-    };
-
-
-}
-
 //
 
   class DataObject : public QObject
@@ -137,6 +89,7 @@ namespace App {
             m_DstPrt = DstPrt;
             m_data = data;
             m_Checksum = Checksum;
+
         }
 
         // DataObject(const T& EtSrc,const T& EtDst,const T& IpSrc,const T& IpDst, const T& IpTll,
@@ -259,6 +212,7 @@ namespace App {
         }
 
 
+
     signals:
         void EtSrcChanged();
         void EtDstChanged();
@@ -286,6 +240,66 @@ namespace App {
         QString m_Checksum;
     };
 
+
+
+
+namespace App {
+    class Instance : public QObject {
+
+        Q_OBJECT
+
+    public:
+        Instance() = default;
+        ~Instance() = default;
+
+        int run(int ac, char *av[]);
+    private:
+        void init();
+        void AddFontDir(QString const& dir);
+        void packetShower(data_t const& data);
+        //void networkSetup();
+        void Sniff();
+        void networkSetupAndSniff();
+        void starting_process();
+        void stop_process();
+        void clear_datalist();
+        void showData(QQuickItem*);
+        //int findInArray(std::string );
+        bool verify(DataObject*);
+
+
+    private:
+        std::unique_ptr<QQuickView> _view;
+        QList<QObject*> _dataList;
+        std::thread _thr1;
+
+        //std::unique_ptr<Net::ANetwork> _net;
+
+        bool go_on = true;
+        std::string _filter_field;
+        std::string _filter_choice;
+        int counter = 0;
+
+        /////
+        /////
+        //std::vector<std::vector<int>>
+        std::vector<std::string> _comboBox_array = { "Ethernet - Src", "Ethernet - Dst", "IP - Src", "IP - Dst", "TLL", "Version","Protocol","SrcPort" , "DstPort", "data", "Checksum"};
+        std::vector<std::string> _comboBox_array_rpstn = { "EtSrc", "EtDst", "IpSrc", "IpDst", "IpTll", "IpV","Protocol","SrcPrt" , "DstPrt", "data", "Checksum"};
+
+
+    public slots:
+    // This method needs to take either a QString or a const reference to one.
+    // (QML doesn't support returning values via the parameter list.)
+    void start(const QString& in);
+    void stop(const QString& in);
+    void clear(const QString& in);
+    void clear_stop(const QString& in);
+    void filter(const QString& in);
+
+    };
+
+
+}
 
 #endif
 

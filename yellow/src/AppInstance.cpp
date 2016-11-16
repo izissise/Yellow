@@ -70,6 +70,42 @@ namespace App {
    
     }
 
+
+    // int Instance::findInArray(std::string str )
+    // {
+    //     std::vector <std::string>::iterator i = _comboBox_array.begin ();
+    //     i = find (_comboBox_array.begin (),_comboBox_array.end (), str);
+
+    //     int ret =  distance (_comboBox_array.begin (), i);
+    //     return ret;
+
+
+    // }
+
+
+    void Instance::filter(const QString &in)
+    {
+        //std::cout << in << std::endl;
+                auto test = in;
+
+        QQuickItem *object_ = _view->QQuickView::rootObject();
+        auto filter_search = object_->property("search").toString();
+        auto filter_choice = object_->property("currentchoice").toString();
+
+        _filter_field = filter_search.toStdString();
+        _filter_choice = filter_choice.toStdString();
+         
+        //  //   DEBUG        
+        // std::cout << _filter_field << std::endl;
+        // std::cout << _filter_choice << std::endl;
+        // std::cout << findInArray(_filter_choice) << std::endl;
+        // //
+
+        clear_datalist();
+
+    }
+
+
     void Instance::clear_datalist()
     {
         _dataList.clear();
@@ -77,16 +113,6 @@ namespace App {
         showData(object_);
    
     }
-
-
-    // TODO :
-    //
-    // add filters:
-    // - list of filer (ip src, ip dest etc.)
-    // - get string of filter 
-    // - modify showed_data list before the set property
-    //
-    /////
 
 
 
@@ -101,11 +127,13 @@ namespace App {
     }
 
     void Instance::showData(QQuickItem *object) {     
-
         auto showed_data = _dataList;
-
         object->setProperty("dataModel", QVariant::fromValue(showed_data));
+
+
         QApplication::processEvents();
+
+
     }
 
 
@@ -158,6 +186,41 @@ namespace App {
         }
     }
 
+    bool Instance::verify(DataObject* dataObject) {
+        if(_filter_field.empty() || _filter_field == "filtre") {
+            return (true);
+        }
+        else {
+
+            // FAIRE DES FUNC PTR DANS VECTOR 
+            //moche//
+
+            if (_filter_choice == "Ethernet - Src")
+                return (dataObject->EtSrc().toStdString().find(_filter_field) != std::string::npos);
+            if (_filter_choice == "Ethernet - Dst")
+                return (dataObject->EtDst().toStdString().find(_filter_field) != std::string::npos);
+            if (_filter_choice == "IP - Src")
+                return (dataObject->IpSrc().toStdString().find(_filter_field) != std::string::npos);
+            if (_filter_choice == "IP - Dst")
+                return (dataObject->IpDst().toStdString().find(_filter_field) != std::string::npos);
+            if (_filter_choice == "TLL")
+                return (dataObject->IpTll().toStdString().find(_filter_field) != std::string::npos);
+            if (_filter_choice == "Version")
+                return (dataObject->Ipv().toStdString().find(_filter_field) != std::string::npos);
+            if (_filter_choice == "Protocol")
+                return (dataObject->Protocol().toStdString().find(_filter_field) != std::string::npos);
+            if (_filter_choice == "SrcPort")
+                return (dataObject->SrcPrt().toStdString().find(_filter_field) != std::string::npos);
+            if (_filter_choice == "DstPort")
+                return (dataObject->DstPrt().toStdString().find(_filter_field) != std::string::npos);
+            if (_filter_choice == "data")
+                return (dataObject->data().toStdString().find(_filter_field) != std::string::npos);
+            if (_filter_choice == "Checksum")
+                return (dataObject->Checksum().toStdString().find(_filter_field) != std::string::npos);
+            else 
+                return (false);
+        }
+    }
 
     void Instance::packetShower(data_t const& data) {
 
@@ -242,8 +305,8 @@ namespace App {
 
         //////
 
-            
-            _dataList.append(dataObject);
+            if (verify(dataObject))
+                _dataList.append(dataObject);
 
            // object->setProperty("dataModel", QVariant::fromValue(_dataList));
 
@@ -277,8 +340,8 @@ namespace App {
 
             auto dataObject = new DataObject(_a, _b, _c, _d ,_e, _f, _g, _h, _i, _j , _k);
                     //////
-            
-            _dataList.append(dataObject);
+            if (verify(dataObject))
+                _dataList.append(dataObject);
             
            // object->setProperty("dataModel", QVariant::fromValue(_dataList));
 
@@ -306,8 +369,8 @@ namespace App {
 
 
             
-
-            _dataList.append(dataObject);
+            if (verify(dataObject))
+                _dataList.append(dataObject);
             
 
 
