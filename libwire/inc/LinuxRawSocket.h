@@ -22,6 +22,8 @@ public:
     //! @throw std::system_error
     void startSniffing(Net::InterfaceInfo const& interface, bool promiscuous) override;
 
+    void writeSocket(data_t const& data) override;
+
     int getFd() const { return _fd; }
 
 protected:

@@ -21,6 +21,9 @@ public:
     //! @throw std::system_error
     virtual void startSniffing(Net::InterfaceInfo const& interface, bool promiscuous = false) = 0;
 
+    //! @throw std::system_error
+    virtual void writeSocket(data_t const& data) = 0;
+
     void onReadAvailable() const;
 
 protected:

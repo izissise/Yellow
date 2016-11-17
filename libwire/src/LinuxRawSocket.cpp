@@ -62,8 +62,13 @@ void LinuxRawSocket::startSniffing(Net::InterfaceInfo const& interface, bool pro
     sg.deactivate();
 }
 
-data_t LinuxRawSocket::_readSock() const {
+void LinuxRawSocket::writeSocket(data_t const& data) {
+    if (write(_fd, data.data(), data.size()) < 0) {
+        throw lastSystemError();
+    }
+}
 
+data_t LinuxRawSocket::_readSock() const {
    ssize_t dataSize = recvfrom(_fd, _sharedBuffer.data(), _sharedBuffer.size(), 0, nullptr, nullptr);
    if (dataSize < 0 && errno != EINTR) {
        throw lastSystemError();
