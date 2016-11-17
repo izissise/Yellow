@@ -121,20 +121,26 @@ in6_addr NetAddr::addrGetRawV6() const {
 }
 
 void NetAddr::addrGRaw(sockaddr_storage& store) const {
+    struct addrinfo hint, *res = nullptr;
     int ret;
-    int af;
-
-    if (_version == Version::V4)
-        af = AF_INET;
-    else if (_version == Version::V6)
-        af = AF_INET6;
-    else
+    if (_version == Version::UNKNOWN)
         throw std::runtime_error("Not a support network layer type.");
-    ret = inet_pton(af, _addr.c_str(), &store);
-    if (ret < 0)
-        throw lastSystemError();
-    else if (ret == 0)
-        throw std::runtime_error("Not an ip address");
+
+    std::memset(&hint, 0, sizeof(hint));
+
+    hint.ai_family = (_version == Net::Version::V4) ? AF_INET :
+    ((_version == Net::Version::V6) ? AF_INET6 : 0);
+    hint.ai_flags = AI_NUMERICHOST;
+    ret = getaddrinfo(_addr.c_str(), nullptr, &hint, &res);
+    ScopeGuard sg([&res] () {
+        freeaddrinfo(res);
+    });
+    if (ret) {
+        throw std::runtime_error(gai_strerror(ret));
+    }
+    if (res->ai_addrlen > sizeof(store))
+        throw std::runtime_error("Wtf");
+    std::memcpy(&store, res->ai_addr, res->ai_addrlen);
 }
 
 std::ostream& operator<<(std::ostream& f, Net::NetAddr const& addr) {
