@@ -73,10 +73,7 @@ public:
     int16_t tot_len() const;
     int16_t id() const;
     int16_t frag_off() const;
-    int8_t protocol() const;
     int16_t check() const;
-
-private:
     data_slice_t getOptionsField() const;
 
 protected:

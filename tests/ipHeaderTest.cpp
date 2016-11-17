@@ -43,7 +43,7 @@ TEST_CASE("Ip Headers tests", "[net][ip][packet]") {
         Net::IpHeaderV4 ipv4(data);
         Net::IpHeaderV6 ipv6(datav6);
 
-//         ipv4.nextHeader(0x67);
+        ipv4.nextHeader(0x67);
         ipv6.nextHeader(0x00);
         REQUIRE_NOTHROW(ipv4.dstAddr(Net::NetAddr("192.168.1.1")));
         REQUIRE_NOTHROW(ipv6.dstAddr(Net::NetAddr("2502:8435:c2e:4801:54ba:640:b0b8:8b72")));
@@ -53,7 +53,7 @@ TEST_CASE("Ip Headers tests", "[net][ip][packet]") {
         REQUIRE_THROWS(ipv4.srcAddr(Net::NetAddr("345.983.1.3")));
         CHECK(ipv4.srcAddr().addr() == "192.168.1.78");
         CHECK(ipv4.dstAddr().addr() == "192.168.1.1");
-//         CHECK(ipv4.nextHeader() == 0x67);
+        CHECK(ipv4.nextHeader() == 0x67);
 
         CHECK(ipv6.dstAddr().addr() == "2502:8435:c2e:4801:54ba:640:b0b8:8b72");
         CHECK(ipv6.nextHeader() == 0x00);

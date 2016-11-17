@@ -96,28 +96,16 @@ int16_t IpHeaderV4::frag_off() const {
     return ntohs(_header->frag_off);
 }
 
-int8_t IpHeaderV4::protocol() const {
-    return _header->protocol;
-}
-
 int16_t IpHeaderV4::check() const {
     return ntohs(_header->check);
 }
 
 uint8_t IpHeaderV4::nextHeader() const {
-    auto slice = getOptionsField();
-    if (slice.ptr() == nullptr || slice.size() == 0) {
-       std::cerr << "No ipv4 options field defaulting to tcp" << std::endl;
-       return IPPROTO_TCP;
-    }
-    return slice.ptr()[0];
+    return _header->protocol;
 }
 
 void IpHeaderV4::nextHeader(uint8_t type) {
-    auto slice = getOptionsField();
-    if (!(slice.ptr() == nullptr || slice.size() == 0)) {
-        slice.ptr()[0] = type;
-    }
+    _header->protocol = type;
 }
 
 data_slice_t IpHeaderV4::getOptionsField() const {
