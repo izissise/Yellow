@@ -20,10 +20,10 @@ public:
     explicit InterfaceInfo(struct ifaddrs const& ifaInfos);
     ~InterfaceInfo() = default;
 
-    Net::NetAddr getName() const { return _name; };
-    Net::NetAddr getAddr() const { return _addr; };
-    Net::NetAddr getNetmask() const { return _netmask; };
-    Net::NetAddr getBroadcast() const { return _broadcast; };
+    std::string const& getName() const { return _name; };
+    Net::NetAddr const& getAddr() const { return _addr; };
+    Net::NetAddr const& getNetmask() const { return _netmask; };
+    Net::NetAddr const& getBroadcast() const { return _broadcast; };
 
     //Flag infos
     bool isUp() const { return ((_flags & IFF_UP) == IFF_UP); }; //Interface is running.
@@ -44,7 +44,7 @@ public:
 //    bool isDynamic() const { return ((_flags & IFF_DYNAMIC) == IFF_DYNAMIC); }; //The addresses are lost when the interface goes down.
 
 protected:
-    NetAddr _name;
+    std::string _name;
     NetAddr _addr;
     NetAddr _netmask;
     NetAddr _broadcast;

@@ -56,13 +56,13 @@ You also must provide unit tests for your software.
 * Complete testing environnement
 | Debian package and install
 \ Interface
-\ live packet capture from raw sockets
+| live packet capture from raw sockets
 | packet capture to file (must be pcap compatible)
 | loading capture from file (must be able to load a pcap file)
 * packet filtering (protobol and port, source ip, destination ip, ...) use /etc/service
 * packet forging
-* packet contents visualization
-* global traffic visualization
+| packet contents visualization
+| global traffic visualization
 
 
 - Optional features -

@@ -92,7 +92,7 @@ Net::Version NetAddr::versionFromString(std::string const& addr) const {
     hint.ai_flags = AI_NUMERICHOST;
     ret = getaddrinfo(addr.c_str(), nullptr, &hint, &res);
     if (ret) {
-        throw std::runtime_error("Not an ip address");
+        throw std::runtime_error((addr + " " + gai_strerror(ret)).c_str());
     }
     if(res->ai_family == AF_INET) {
         return Net::Version::V4;
