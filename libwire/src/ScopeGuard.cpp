@@ -5,5 +5,6 @@ ScopeGuard::ScopeGuard(std::function<void()> callback)
 }
 
 ScopeGuard::~ScopeGuard() {
-    _callback();
+    if (!_deactivated)
+        _callback();
 }

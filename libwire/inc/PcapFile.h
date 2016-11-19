@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <deque>
 #include <memory>
 #include <tuple>
 #include <fstream>
@@ -50,6 +51,7 @@ public:
     void saveFile(std::string const& filePath) const;
 
     void addPacket(Net::PcapPacket packet);
+    std::deque<Net::PcapPacket> const& packets() const { return _packets; }
 
     bool isByteSwap() const { return _needSwap; };
 
@@ -69,7 +71,7 @@ public:
 private:
     bool _needSwap;
     pcap_hdr_t _header;
-    std::vector<PcapPacket> _packets;
+    std::deque<PcapPacket> _packets;
 };
 
 template<class STREAM>
@@ -119,10 +121,9 @@ void PcapFile::saveFile(std::string const& filePath) const {
     file.open(filePath, std::ios::out | std::ios::trunc | std::ios::binary);
 
     file.write(reinterpret_cast<const char*>(&_header), sizeof(_header));
-    std::ostreambuf_iterator<char> outIt(file);
     for (auto const& packet : _packets) {
-        auto d = packet.getRawData();
-        file.write(d.data(), d.size());
+        auto d = packet.getRawHeaderAndData();
+        file.write(reinterpret_cast<const char*>(d.data()), d.size());
     }
 }
 

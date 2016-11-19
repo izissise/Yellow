@@ -73,6 +73,7 @@ COMPILER_FLAGS(FLAGS "-std=c++14"
                     "-Wno-suggest-attribute=noreturn"
                     "-fsanitize=address"
                     "-pipe"
+                    "-pthread"
             FLAGS_RELEASE  "-march=native" "-Wno-inline"
 )
 
